@@ -1,0 +1,433 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-COM</title>
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<style>
+    .menu {
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(160deg, #4CAF50, #C3E01F);
+    padding: 0;
+    gap: 0;
+}
+
+/* Normal menu links */
+.menu a {
+    position: relative;
+    color: white;
+    text-decoration: none;
+    padding: 16px 28px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+/* Hover */
+.menu a:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* ACTIVE TAB EXACT IMAGE STYLE */
+.menu a.active {
+  background: transparent;
+    color: white;
+}
+
+/* Bottom white line */
+.menu a.active::before {
+    content: "";
+    position: absolute;
+    bottom: 10px;
+    left: 18%;
+    width: 64%;
+    height: 2px;
+    background: white;
+}
+
+/* Left white dot */
+.menu a.active::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: 14%;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+}
+
+/* Right white dot */
+.menu a.active span.dot-right {
+    position: absolute;
+    bottom: 8px;
+    right: 14%;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+}
+</style>
+<!-- ================= HEADER ================= -->
+<header class="navbar">
+
+    <!-- Logo -->
+    <div class="logo">
+        <img src="{% static 'image/image 63.png' %}" alt="logo">
+        <div class="logo-text">
+            <h2>SELLER</h2>
+            <p>
+                <span style="color:black;">E-COM</span>
+                <span style="color:#F6E63B;"> Delivery</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-box">
+        <input type="text" placeholder="Search for products, brand and more">
+        <span class="search-icon">🔍</span>
+    </div>
+
+    <!-- Desktop Menu -->
+    <div class="nav-right desktop-menu">
+        <a href="{% url 'eshop:seller_home' %}">
+            <i class="fa-solid fa-tag"></i> Become a Seller
+        </a>
+
+        <a href="{% url 'eshop:cart' %}">
+            <i class="fa-solid fa-cart-shopping"></i> Carts
+        </a>
+
+      {% if user.is_authenticated %}
+<div class="user-menu">
+    <button class="user-btn" onclick="toggleUserPopup()">
+        <i class="fa fa-user-circle"></i>
+        {{ user.first_name|default:user.username }}
+        <i class="fa fa-chevron-down"></i>
+    </button>
+
+    <div id="userPopup" class="user-popup">
+        <a href="{% url 'eshop:profile' %}">My Profile</a>
+        <a href="{% url 'eshop:wishlist' %}"> Wishlist</a>
+    <a href="{% url 'eshop:profile' %}?tab=orders"></i> My Orders</a>
+    <a href="{% url 'eshop:notifications' %}">Notifications</a>
+    <a href="{% url 'eshop:order_status' %}"> Order Status</a>
+        <a href="{% url 'eshop:logout' %}">
+             Logout
+        </a>
+    </div>
+</div>
+{% else %}
+<button class="login-btn" onclick="openLoginModal()">Login<i class="fa fa-chevron-down"></i></button>
+{% endif %}
+
+        <a href="{% url 'eshop:enquiry' %}">
+            <span class="support">
+                24/7 <br>
+                <i class="fa-solid fa-headset"></i>
+            </span>
+        </a>
+    </div>
+
+    <!-- Hamburger -->
+    <div class="hamburger" onclick="toggleMobileMenu()">
+        <i class="fa fa-bars"></i>
+    </div>
+
+</header>
+
+<!-- ================= DESKTOP NAV ================= -->
+<nav class="menu desktop-menu">
+    <a href="{% url 'eshop:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+        Home
+        {% if request.resolver_match.url_name == 'index' %}
+        <span class="dot-right"></span>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'eshop:categories' %}" class="{% if request.resolver_match.url_name == 'categories' %}active{% endif %}">
+        Categories
+        {% if request.resolver_match.url_name == 'categories' %}
+        <span class="dot-right"></span>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'eshop:blog' %}" class="{% if request.resolver_match.url_name == 'blog' %}active{% endif %}">
+        Blog
+        {% if request.resolver_match.url_name == 'blog' %}
+        <span class="dot-right"></span>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'eshop:contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">
+        Contact us
+        {% if request.resolver_match.url_name == 'contact' %}
+        <span class="dot-right"></span>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'eshop:about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+        About us
+        {% if request.resolver_match.url_name == 'about' %}
+        <span class="dot-right"></span>
+        {% endif %}
+    </a>
+</nav>
+
+<!-- ================= MOBILE MENU ================= -->
+<div id="mobileMenu" class="mobile-menu">
+    <a href="{% url 'eshop:index' %}">Home</a>
+    <a href="{% url 'eshop:categories' %}">Categories</a>
+    <a href="{% url 'eshop:blog' %}">Blog</a>
+    <a href="{% url 'eshop:contact' %}">Contact us</a>
+    <a href="{% url 'eshop:about' %}">About us</a>
+    <a href="{% url 'eshop:seller_home' %}">Become a Seller</a>
+    <a href="#">Cart</a>
+    <a href="#" onclick="openLoginModal()">Login</a>
+    <a href="{% url 'eshop:enquiry' %}">Support</a>
+</div>
+
+<!-- ================= MESSAGES ================= -->
+{% if messages %}
+<div style="text-align:center; padding:10px;">
+    {% for message in messages %}
+        <p style="color:green;">{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- ================= PAGE CONTENT ================= -->
+{% block content %}
+{% endblock %}
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+
+    <div class="footer-container">
+
+        <!-- Logo Footer -->
+        <div class="footer-col logo-col">
+            <img src="{% static 'image/image 63.png' %}" alt="logo">
+            <h3>SELLER</h3>
+            <p>E-COM <span style="color:#F6E63B;">Delivery</span></p>
+        </div>
+
+        <!-- Links -->
+        <div class="footer-col">
+            <a href="#">Customer Service</a>
+            <a href="#">My Account</a>
+            <a href="#">Checkup</a>
+            <a href="#">FAQ</a>
+            <a href="#">Return</a>
+        </div>
+
+        <div class="footer-col">
+            <a href="#">Company</a>
+            <a href="#">About us</a>
+            <a href="#">Blogs</a>
+            <a href="#">Contact us</a>
+            <a href="#">Career</a>
+        </div>
+
+        <div class="footer-col">
+            <a href="#">Our information</a>
+            <a href="#">Privacy</a>
+            <a href="#">Terms & Condition</a>
+            <a href="#">Customer Feed back</a>
+        </div>
+
+        <!-- Contact -->
+        <div class="footer-col">
+            <p>Mobile: 123-456-789</p>
+            <p>Email: vibeygif@gmail.com</p>
+            <p>Address: 12, north city-001</p>
+
+            <div class="social-icons">
+                <a href="#"><i class="fab fa-whatsapp"></i></a>
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+
+    </div>
+
+    <hr class="footer-line">
+
+    <div class="footer-bottom">
+        <p>© 2025 Seller.co.in All rights reserved.</p>
+        <p>Terms & Conditions | Privacy Policy</p>
+    </div>
+
+</footer>
+
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <!-- LEFT LOGIN -->
+        <div class="login-box">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+
+            <h2>Register Free !</h2>
+
+            <form method="POST" action="{% url 'eshop:login' %}">
+                {% csrf_token %}
+
+                <input type="email" name="email" placeholder="Enter your e-mail" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <!-- Login Button + Forgot Password -->
+                <div class="login-actions">
+                    <button type="submit">Login</button>
+                    <a href="#" class="forgot-link">Forget your password?</a>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Sign Up Using</span>
+                </div>
+
+                <!-- Social Media Icons -->
+                <div class="social-login">
+                    <a href="#"><i class="fab fa-google"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+
+                <!-- Signup Link -->
+                <p class="signup-text">
+                    Don’t have an account ?
+                    <a href="#" onclick="openSignupModal()">Create New Account</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Login Image">
+        </div>
+
+    </div>
+</div>
+
+<!-- ================= SIGNUP MODAL ================= -->
+<div id="signupModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <div class="login-box">
+            <span class="close-btn" onclick="closeSignupModal()">&times;</span>
+
+            <h2>Sign Up</h2>
+
+            <form method="POST" action="{% url 'eshop:signup' %}" onsubmit="return validateSignup()">
+                {% csrf_token %}
+
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+                <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
+
+                <small id="passwordError" style="color:red;"></small>
+
+                <div class="login-actions">
+                    <button type="submit">Sign Up</button>
+                </div>
+
+                <p class="signup-text">
+                    Already have an account ?
+                    <a href="#" onclick="backToLogin()">log in</a>
+                </p>
+            </form>
+        </div>
+
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Signup Image">
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup" class="success-popup">
+    <div class="success-box">
+        <div class="tick-circle">✔</div>
+        <h3>Login Successful</h3>
+    </div>
+</div>
+
+
+<script>
+function openLoginModal(){
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function closeLoginModal(){
+    document.getElementById("loginModal").style.display="none";
+}
+
+function openSignupModal(){
+    document.getElementById("loginModal").style.display="none";
+    document.getElementById("signupModal").style.display="flex";
+}
+
+function closeSignupModal(){
+    document.getElementById("signupModal").style.display="none";
+}
+
+function backToLogin(){
+    document.getElementById("signupModal").style.display="none";
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function toggleUserPopup(){
+    document.getElementById("userPopup").classList.toggle("show");
+}
+
+window.onclick = function(event){
+    if(!event.target.closest('.user-menu')){
+        let popup=document.getElementById("userPopup");
+        if(popup){
+            popup.classList.remove("show");
+        }
+    }
+}
+</script>
+
+
+
+<script>
+function toggleUserPopup() {
+    document.getElementById("userPopup").classList.toggle("show");
+}
+
+window.onclick = function(event) {
+    if (!event.target.closest('.user-menu')) {
+        let popup = document.getElementById("userPopup");
+        if (popup) popup.classList.remove("show");
+    }
+}
+</script>
+</body>
+</html>

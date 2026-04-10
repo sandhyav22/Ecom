@@ -1,0 +1,793 @@
+
+{% extends "eshop/base.html" %}
+{% load static %}
+{% block content %}
+<style>
+    /* Hamburger hidden desktop */
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Mobile menu hidden initially */
+.mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: white;
+    width: 100%;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.mobile-menu a {
+    padding: 12px;
+    text-decoration: none;
+    color: black;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+
+    .desktop-menu {
+        display: none !important;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .search-box {
+        width: 50%;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+    }
+
+    .mobile-menu.show {
+        display: flex;
+    }
+}
+
+  /* ===== PAGE WRAPPER ===== */
+  .cat-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 24px 20px;
+  }
+
+  /* ===== TOP BAR: title + filter btn ===== */
+  .cat-topbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 28px;
+  }
+
+  .cat-topbar h2 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #111;
+    text-align: center;
+    align-items: center;
+  }
+
+  .filter-toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    background: #fff;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    padding: 10px 22px;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    color: #111;
+  }
+
+  .filter-toggle-btn:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+
+  .filter-toggle-btn .arrow {
+    font-size: 14px;
+    transition: transform 0.3s;
+  }
+
+  .filter-toggle-btn.open .arrow {
+    transform: rotate(180deg);
+  }
+
+  /* ===== CONTENT ROW: sidebar + grid ===== */
+  .cat-content {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  /* ===== FILTER SIDEBAR ===== */
+  .filter-sidebar {
+    width: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: width 0.35s ease, opacity 0.3s ease;
+    flex-shrink: 0;
+  }
+
+  .filter-sidebar.open {
+    width: 230px;
+    opacity: 1;
+  }
+
+  .filter-inner {
+    width: 230px;
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .filter-group h4 {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: #fff;
+    background: linear-gradient( #4CAF50 , #C3E01F);;
+    padding: 7px 12px;
+    border-radius: 6px;
+    margin-bottom: 10px;
+  }
+
+  .filter-group label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 7px;
+    cursor: pointer;
+  }
+
+  .filter-group label input {
+    accent-color: #00a650;
+    width: 14px;
+    height: 14px;
+  }
+
+  /* shopify-style green banner at bottom of sidebar */
+  .sidebar-banner {
+    background: linear-gradient(135deg, #4CAF50, #C3E01F);
+    border-radius: 10px;
+    padding: 16px 12px;
+    text-align: center;
+    color: #fff;
+  }
+
+  .sidebar-banner p {
+    font-size: 12px;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .sidebar-banner img {
+    width: 160px;
+    height: 100%;
+  }
+
+  /* ===== PRODUCT GRID ===== */
+  .product-grid {
+    flex: 1;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    transition: all 0.35s ease;
+  }
+
+  /* when filter is open, grid shrinks to 2 cols naturally via flex */
+
+  /* ===== PRODUCT CARD ===== */
+  .prod-card {
+    background: #fff;
+    border: 1px solid #e8e8e8;
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    transition: box-shadow 0.2s;
+  }
+
+  .prod-card:hover {
+    box-shadow: 0 6px 20px rgba(0,0,0,0.09);
+  }
+
+  .prod-card-top {
+    position: relative;
+  }
+
+  /* green discount badge */
+  .prod-badge {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: #C3E01F;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 5px 9px;
+    border-radius: 0 0 8px 0;
+    line-height: 1.3;
+    text-align: center;
+    z-index: 2;
+  }
+
+  /* size label (xL Size) */
+  .prod-size {
+    position: absolute;
+    top: 10px;
+    left: 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #222;
+    line-height: 1.3;
+    z-index: 2;
+    margin-top: 42px;
+  }
+
+  /* yellow wishlist heart */
+  .prod-wish {
+    position: absolute;
+    top: 10px;
+    right: 12px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    z-index: 2;
+    padding: 0;
+  }
+
+  .prod-wish svg {
+    width: 24px;
+    height: 24px;
+    fill: none;
+    stroke: #F6E63B;
+    stroke-width: 2;
+    transition: fill 0.2s;
+  }
+
+  .prod-wish:hover svg,
+  .prod-wish.active svg {
+    fill: #F6E63B;
+  }
+
+  .prod-img {
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background: #f9f9f9;
+    padding: 10px;
+    box-sizing: border-box;
+  }
+
+  .prod-body {
+    padding: 12px 14px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+  }
+
+  .prod-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+    text-align: center;
+    margin: 0;
+  }
+
+  .prod-price {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+    text-align: center;
+  }
+
+  .prod-add-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: linear-gradient(#4CAF50,#C3E01F);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px;
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    margin-top: 4px;
+    transition: background 0.2s, transform 0.1s;
+  }
+
+  .prod-add-btn:hover  { background: #4CAF50; }
+  .prod-add-btn:active { transform: scale(0.97); }
+
+  .prod-add-btn svg {
+    width: 17px;
+    height: 17px;
+    fill: #fff;
+  }
+
+  /* ===== TABLET ===== */
+  @media (max-width: 900px) {
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .filter-sidebar.open {
+      width: 200px;
+    }
+
+    .filter-inner {
+      width: 200px;
+    }
+  }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 600px) {
+    .cat-content {
+      flex-direction: column;
+    }
+
+    .filter-sidebar.open {
+      width: 100%;
+    }
+
+    .filter-inner {
+      width: 100%;
+    }
+
+    .product-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .cat-topbar h2 {
+      font-size: 20px;
+    }
+  }
+</style>
+
+<div class="cat-page">
+
+  <!-- Top bar -->
+  <div class="cat-topbar">
+    <h2 style="margin-left: 40%;">Shopping Section</h2><br>
+
+    <button class="filter-toggle-btn" id="filterBtn" onclick="toggleFilter()">
+      Filter <span class="arrow">&#8964;</span>
+    </button>
+  </div>
+
+  <!-- Content row -->
+  <div class="cat-content">
+
+    <!-- ── FILTER SIDEBAR ── -->
+    <div class="filter-sidebar" id="filterSidebar">
+      <div class="filter-inner">
+
+        <!-- Select Category -->
+        <div class="filter-group">
+          <h4>Select Category</h4>
+          <label><input type="checkbox" /> Men's Fashion</label>
+          <label><input type="checkbox" /> Women's Fashion</label>
+          <label><input type="checkbox" /> Electronics</label>
+          <label><input type="checkbox" /> Mobile &amp; Accessories</label>
+          <label><input type="checkbox" /> Home &amp; Kitchen</label>
+          <label><input type="checkbox" /> Beauty &amp; Grooming </label>
+          <label><input type="checkbox" /> Groceries </label>
+          <label><input type="checkbox" /> Vegetables </label>
+          <label><input type="checkbox" /> Fruits </label>
+         
+        </div>
+
+        <!-- Delivery Options -->
+        <div class="filter-group">
+          <h4>Delivery Options</h4>
+          <label><input type="radio" name="delivery" /> Free Delivery</label>
+          <label><input type="radio" name="delivery" /> 1-Day Delivery</label>
+          <label><input type="radio" name="delivery" /> Same Day Delivery</label>
+          <label><input type="radio" name="delivery" /> Cash on Delivery</label>
+        </div>
+
+        <!-- Price -->
+        <div class="filter-group">
+          <h4>Price</h4>
+          <label><input type="radio" name="price" />₹0 - ₹499</label>
+          <label><input type="radio" name="price" /> ₹500 - ₹999</label>
+          <label><input type="radio" name="price" /> ₹1000 - ₹ 1999</label>
+          <label><input type="radio" name="price" /> ₹2000 - ₹ 4999</label>
+          <label><input type="radio" name="price" /> ₹5000 & Above</label>
+        </div>
+
+        <!-- Customer Ratings -->
+        <div class="filter-group">
+          <h4>Customer Ratings</h4>
+          <label><input type="radio" name="rating" /> 4 Star &amp; Above ⭐⭐⭐⭐</label>
+          <label><input type="radio" name="rating" /> 5 Star &amp;⭐⭐⭐⭐⭐ </label>
+        </div>
+
+        <!-- Apply button -->
+        <button onclick="applyFilter()"
+          style="background:linear-gradient(#4CAF50,#C3E01F);color:#fff;border:none;border-radius:8px;
+                 padding:10px;font-size:14px;font-weight:600;cursor:pointer;width:100%;">
+          Submit
+        </button>
+
+        <!-- Shopify-style green banner -->
+        <div class="sidebar-banner">
+        <img src="{% static 'image/image 63.png' %}" alt="logo">
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── PRODUCT GRID ── -->
+    <div class="product-grid" id="productGrid">
+
+      {% if products %}
+        {% for product in products %}
+        <div class="prod-card">
+          <div class="prod-card-top">
+            <div class="prod-badge">{{ product.discount_percent }}%<br>off</div>
+
+            {% if product.size %}
+            <div class="prod-size">{{ product.size }}<br>Size</div>
+            {% endif %}
+
+            <button class="prod-wish"
+         onclick="toggleWishlist(this, {{ product.id }})">
+              <svg viewBox="0 0 24 24">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67
+                  l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06
+                  L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+              </svg>
+            </button>
+
+            {% if product.image %}
+              <img class="prod-img" src="{{ product.image.url }}" alt="{{ product.name }}"
+                   onerror="this.src='https://via.placeholder.com/300x200?text={{ product.name }}'" />
+            {% else %}
+              <img class="prod-img"
+                   src="https://via.placeholder.com/300x200?text={{ product.name }}"
+                   alt="{{ product.name }}" />
+            {% endif %}
+          </div>
+
+          <div class="prod-body">
+            <p class="prod-name">{{ product.name }}</p>
+            <p class="prod-price">$ {{ product.price }}</p>
+            <button class="prod-add-btn">
+              Add to
+             <i class="fa-solid fa-cart-arrow-down"></i>
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+
+      {% else %}
+        {% for item in demo_products %}
+        <div class="prod-card">
+          <div class="prod-card-top">
+            <div class="prod-badge">20%<br>off</div>
+            {% if item.size %}
+            <div class="prod-size">{{ item.size }}<br>Size</div>
+            {% endif %}
+            <button class="prod-wish" onclick="this.classList.toggle('active')">
+              <svg viewBox="0 0 24 24">
+                <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67
+                  l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06
+                  L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+              </svg>
+            </button>
+            <img class="prod-img"
+                 src="https://via.placeholder.com/300x200?text={{ item.name }}"
+                 alt="{{ item.name }}" />
+          </div>
+          <div class="prod-body">
+            <p class="prod-name">{{ item.name }}</p>
+            <p class="prod-price">$ {{ item.price }}</p>
+            <button class="prod-add-btn">
+              Add to
+             <i class="fa-solid fa-cart-arrow-down"></i>
+            </button>
+          </div>
+        </div>
+        {% endfor %}
+      {% endif %}
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const CSRF_TOKEN = '{{ csrf_token }}';
+
+  function toggleFilter() {
+    const sidebar = document.getElementById('filterSidebar');
+    const btn     = document.getElementById('filterBtn');
+    sidebar.classList.toggle('open');
+    btn.classList.toggle('open');
+  }
+
+  function applyFilter() {
+    const cats = [...document.querySelectorAll('.filter-group input[type=checkbox]:checked')]
+      .map(cb => cb.closest('label').textContent.trim());
+
+    const delivery = document.querySelector('input[name=delivery]:checked');
+    const price    = document.querySelector('input[name=price]:checked');
+    const rating   = document.querySelector('input[name=rating]:checked');
+
+    console.log('Filters applied:', {
+      categories: cats,
+      delivery: delivery ? delivery.closest('label').textContent.trim() : null,
+      price: price ? price.closest('label').textContent.trim() : null,
+      rating: rating ? rating.closest('label').textContent.trim() : null,
+    });
+  }
+
+  // ✅ WISHLIST TOGGLE FUNCTION
+  function toggleWishlist(button, productId) {
+
+    fetch('/wishlist/toggle/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': CSRF_TOKEN
+      },
+      body: JSON.stringify({
+        product_id: productId
+      })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Login required");
+      return res.json();
+    })
+    .then(data => {
+
+      if (data.added) {
+        button.classList.add('active');
+        showToast("Added to wishlist ❤️");
+      } else {
+        button.classList.remove('active');
+        showToast("Removed from wishlist ❌");
+      }
+
+    })
+    .catch(() => {
+      showToast("Please login first ⚠️");
+      window.location.href = "/login/";
+    });
+  }
+
+  // ✅ TOAST FUNCTION
+  function showToast(message) {
+    let toast = document.getElementById("toast");
+
+    if (!toast) {
+      toast = document.createElement("div");
+      toast.id = "toast";
+      toast.style.position = "fixed";
+      toast.style.bottom = "20px";
+      toast.style.right = "20px";
+      toast.style.background = "#222";
+      toast.style.color = "#fff";
+      toast.style.padding = "10px 20px";
+      toast.style.borderRadius = "8px";
+      toast.style.zIndex = "9999";
+      document.body.appendChild(toast);
+    }
+
+    toast.innerText = message;
+    toast.style.display = "block";
+
+    setTimeout(() => {
+      toast.style.display = "none";
+    }, 2000);
+  }
+  function applyFilter() {
+  const categories = [...document.querySelectorAll(
+    '.filter-group input[type=checkbox]:checked'
+  )].map(cb => cb.value);
+
+  fetch("/filter-products/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": CSRF_TOKEN
+    },
+    body: JSON.stringify({ categories: categories })
+  })
+  .then(res => res.json())
+  .then(data => {
+    renderProducts(data.products);
+  });
+}
+function renderProducts(products) {
+  const grid = document.getElementById("productGrid");
+  grid.innerHTML = "";
+
+  if (products.length === 0) {
+    grid.innerHTML = "<p>No products found</p>";
+    return;
+  }
+
+  products.forEach(p => {
+    grid.innerHTML += `
+      <div class="prod-card">
+        <div class="prod-card-top">
+          <img class="prod-img" src="${p.image}" />
+        </div>
+        <div class="prod-body">
+          <p class="prod-name">${p.name}</p>
+          <p class="prod-price">₹${p.price}</p>
+        </div>
+      </div>
+    `;
+  });
+}
+</script>
+
+{% endblock %}
+
+
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <!-- LEFT LOGIN -->
+        <div class="login-box">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+
+            <h2>Register Free !</h2>
+
+            <form method="POST" action="{% url 'eshop:login' %}">
+                {% csrf_token %}
+
+                <input type="email" name="email" placeholder="Enter your e-mail" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <!-- Login Button + Forgot Password -->
+                <div class="login-actions">
+                    <button type="submit">Login</button>
+                    <a href="#" class="forgot-link">Forget your password?</a>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Sign Up Using</span>
+                </div>
+
+                <!-- Social Media Icons -->
+                <div class="social-login">
+                    <a href="#"><i class="fab fa-google"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+
+                <!-- Signup Link -->
+                <p class="signup-text">
+                    Don’t have an account ?
+                    <a href="#" onclick="openSignupModal()">Create New Account</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Login Image">
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ================= SIGNUP MODAL ================= -->
+<div id="signupModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <div class="login-box">
+            <span class="close-btn" onclick="closeSignupModal()">&times;</span>
+
+            <h2>Sign Up</h2>
+
+            <form method="POST" action="{% url 'eshop:signup' %}" onsubmit="return validateSignup()">
+                {% csrf_token %}
+
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+                <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
+
+                <small id="passwordError" style="color:red;"></small>
+
+                <div class="login-actions">
+                    <button type="submit">Sign Up</button>
+                </div>
+
+                <p class="signup-text">
+                    Already have an account ?
+                    <a href="#" onclick="backToLogin()">log in</a>
+                </p>
+            </form>
+        </div>
+
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Signup Image">
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup" class="success-popup">
+    <div class="success-box">
+        <div class="tick-circle">✔</div>
+        <h3>Login Successful</h3>
+    </div>
+</div>
+
+<script>
+function openLoginModal(){
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function closeLoginModal(){
+    document.getElementById("loginModal").style.display="none";
+}
+
+function openSignupModal(){
+    document.getElementById("loginModal").style.display="none";
+    document.getElementById("signupModal").style.display="flex";
+}
+
+function closeSignupModal(){
+    document.getElementById("signupModal").style.display="none";
+}
+
+function backToLogin(){
+    document.getElementById("signupModal").style.display="none";
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function toggleUserPopup(){
+    document.getElementById("userPopup").classList.toggle("show");
+}
+
+window.onclick = function(event){
+    if(!event.target.closest('.user-menu')){
+        let popup=document.getElementById("userPopup");
+        if(popup){
+            popup.classList.remove("show");
+        }
+    }
+}
+</script>
+
+
+

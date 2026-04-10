@@ -1,0 +1,1574 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>E-COM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+  <style>
+ /* ================= LOGIN BUTTON ================= */
+.login-btn{
+    background:white;
+    color:#4CAF50;
+    border:none;
+    padding:10px 22px;
+    border-radius:30px;
+    cursor:pointer;
+}
+
+/* ================= USER MENU ================= */
+.user-menu{
+    position:relative;
+}
+
+.user-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: white;
+    color: #4CAF50;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 15px;
+}
+
+.user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid white;
+}
+
+.user-popup{
+    display:none;
+    position:absolute;
+    right:0;
+    top:55px;
+    width:230px;
+    background: linear-gradient(#4CAF50,#C3E01F);
+    border-radius:15px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.15);
+    overflow:hidden;
+    z-index:999;
+}
+
+.user-popup.show{
+    display:block;
+}
+
+.user-popup a{
+    display:block;
+    padding:14px 18px;
+    text-decoration:none;
+    color:#333;
+    border-bottom:1px solid #eee;
+}
+
+.user-popup a:hover{
+    background:#f5fff7;
+    color:#c3e01f;
+}
+
+.menu {
+    display: flex;
+    justify-content: center;
+    background: linear-gradient(160deg, #4CAF50, #C3E01F);
+    padding: 0;
+    gap: 0;
+}
+
+/* Normal menu links */
+.menu a {
+    position: relative;
+    color: white;
+    text-decoration: none;
+    padding: 16px 28px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+/* Hover */
+.menu a:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+/* ACTIVE TAB EXACT IMAGE STYLE */
+.menu a.active {
+    background: #0aa000;
+    color: white;
+}
+
+/* Bottom white line */
+.menu a.active::before {
+    content: "";
+    position: absolute;
+    bottom: 10px;
+    left: 18%;
+    width: 64%;
+    height: 2px;
+    background: white;
+}
+
+/* Left white dot */
+.menu a.active::after {
+    content: "";
+    position: absolute;
+    bottom: 8px;
+    left: 14%;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+}
+
+/* Right white dot */
+.menu a.active span.dot-right {
+    position: absolute;
+    bottom: 8px;
+    right: 14%;
+    width: 6px;
+    height: 6px;
+    background: white;
+    border-radius: 50%;
+}
+
+/* ================= HERO ================= */
+.hero{
+    padding:60px;
+    text-align:center;
+}
+
+.hero h1{
+    font-size:42px;
+}
+
+/* ================= LOGIN MODAL ================= */
+.login-overlay{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.login-container{
+    width:900px;
+    max-width:95%;
+    background:white;
+    border-radius:20px;
+    overflow:hidden;
+    display:flex;
+}
+
+.login-box{
+    width:50%;
+    padding:40px;
+    position:relative;
+    
+}
+
+.login-image{
+    width:50%;
+    background:#f9f9f9;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.login-image img{
+    width:75%;
+}
+
+.close-btn{
+    position:absolute;
+    top:20px;
+    right:25px;
+    font-size:30px;
+    cursor:pointer;
+}
+
+.login-box input{
+    width:100%;
+    padding:14px;
+    margin-bottom:15px;
+    border:2px solid #4CAF50;
+    border-radius:10px;
+}
+
+.login-actions{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.login-actions button{
+    background:linear-gradient(#4CAF50,#c3e01f);
+    color:white;
+    border:none;
+    padding:12px 30px;
+    border-radius:10px;
+    cursor:pointer;
+}
+
+.forgot-link{
+    text-decoration:none;
+    color:#555;
+    font-size:14px;
+}
+
+.divider{
+    text-align:center;
+    margin:25px 0;
+    position:relative;
+}
+
+.divider span{
+    background:#fff;
+    padding:0 15px;
+}
+
+.divider:before{
+    content:"";
+    position:absolute;
+    width:100%;
+    height:1px;
+    background:#ddd;
+    left:0;
+    top:50%;
+    z-index:-1;
+}
+
+.social-login{
+    display:flex;
+    justify-content:space-around;
+    border:1px solid #ddd;
+    padding:14px;
+    border-radius:10px;
+}
+
+.social-login a{
+    font-size:20px;
+    color:#333;
+}
+
+.signup-text{
+    text-align:center;
+    margin-top:20px;
+}
+
+/* ================= SUCCESS POPUP ================= */
+.success-popup{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.5);
+    justify-content:center;
+    align-items:center;
+    z-index:99999;
+}
+
+.success-box{
+    background:white;
+    padding:40px;
+    border-radius:20px;
+    text-align:center;
+}
+
+.tick-circle{
+    width:70px;
+    height:70px;
+    border-radius:50%;
+    background:#c3e01f;
+    color:white;
+    font-size:36px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:auto;
+}
+
+/* Hamburger hidden desktop */
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Mobile menu hidden initially */
+.mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: white;
+    width: 100%;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.mobile-menu a {
+    padding: 12px;
+    text-decoration: none;
+    color: black;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+
+    .desktop-menu {
+        display: none !important;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .search-box {
+        width: 50%;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+    }
+
+    .mobile-menu.show {
+        display: flex;
+    }
+}
+/* ===== DEALS SECTION ===== */
+    .deals-section {
+      max-width: 1100px;
+      margin: 60px auto;
+      padding: 0 24px;
+    }
+
+    .deals-heading {
+      text-align: center;
+      font-size: 36px;
+      font-weight: 700;
+      color: #00a650;
+      margin-bottom: 40px;
+    }
+
+    /* 3-column grid */
+.deals-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit,minmax(280px,1fr));
+  gap: 24px;
+}
+    /* ===== CARD ===== */
+    .deal-card {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      transition: box-shadow 0.2s;
+    }
+
+    .deal-card:hover {
+      box-shadow: 0 6px 24px rgba(0,0,0,0.10);
+    }
+
+    .card-top {
+      position: relative;
+    }
+
+    /* green discount badge — top left */
+    .discount-badge {
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: #00a650;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 10px;
+      border-radius: 0 0 8px 0;
+      line-height: 1.3;
+      text-align: center;
+      z-index: 2;
+    }
+
+    /* yellow heart — top right */
+    .wishlist-btn {
+      position: absolute;
+      top: 10px;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 2;
+      padding: 0;
+    }
+
+    .wishlist-btn svg {
+      width: 26px;
+      height: 26px;
+      fill: none;
+      stroke: #f5c518;
+      stroke-width: 2;
+      transition: fill 0.2s;
+    }
+
+    .wishlist-btn:hover svg,
+    .wishlist-btn.active svg {
+      fill: #f5c518;
+    }
+
+    /* product image */
+    .card-img {
+      width: 100%;
+      height: 220px;
+      object-fit: contain;
+      background: #f9f9f9;
+      padding: 12px;
+      box-sizing: border-box;
+    }
+
+    /* card body */
+    .card-body {
+      padding: 14px 16px 16px;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      gap: 4px;
+    }
+
+    .card-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 4px;
+    }
+
+    .card-category {
+      font-size: 15px;
+      font-weight: 600;
+      color: #00a650;
+    }
+
+    .card-rating {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #444;
+    }
+
+    .card-rating svg {
+      width: 16px;
+      height: 16px;
+      fill: #f5c518;
+    }
+
+    .card-name {
+      font-size: 15px;
+      font-weight: 500;
+      color: #222;
+      margin: 0;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: #888;
+      margin: 0;
+    }
+
+    .card-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .card-price {
+      font-size: 22px;
+      font-weight: 700;
+      color: #111;
+    }
+
+    /* green add-to-cart button */
+    .add-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #00a650;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    .add-btn:hover  { background: #008c42; }
+    .add-btn:active { transform: scale(0.97); }
+
+    .add-btn svg {
+      width: 18px;
+      height: 18px;
+      fill: #fff;
+    }
+
+    /* ===== TABLET: 2 columns ===== */
+    @media (max-width: 900px) {
+      .deals-grid    { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+      .deals-heading { font-size: 28px; }
+    }
+
+    /* ===== MOBILE: 1 column ===== */
+    @media (max-width: 540px) {
+      .deals-section  { padding: 0 14px; margin: 36px auto; }
+      .deals-heading  { font-size: 22px; margin-bottom: 24px; }
+      .deals-grid     { grid-template-columns: 1fr; gap: 16px; }
+      .card-img       { height: 180px; }
+    }
+   
+    /* ================= CUSTOMER REVIEWS ================= */
+.reviews-section {
+  background: #e9e9e9;
+  padding: 80px 0;
+  overflow: hidden;
+}
+
+.reviews-title {
+  text-align: center;
+  font-size: 48px;
+  color: #00c52b;
+  font-weight: 700;
+  margin-bottom: 60px;
+}
+
+.reviews-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  overflow: hidden;
+}
+
+.reviews-track {
+  display: flex;
+  gap: 35px;
+  width: max-content;
+}
+
+.reviews-left {
+  animation: scrollLeft 25s linear infinite;
+}
+
+.reviews-right {
+  animation: scrollRight 25s linear infinite;
+}
+
+.review-card {
+  min-width: 380px;
+  max-width: 380px;
+  background: linear-gradient(to bottom, #008c1f, #00d92f);
+  border-radius: 30px;
+  padding: 30px;
+  color: white;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.review-avatar {
+  width: 95px;
+  height: 95px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0 auto 20px;
+  border: 4px solid white;
+}
+
+.review-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.review-card h3 {
+  text-align: center;
+  font-size: 22px;
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+.stars {
+  text-align: center;
+  font-size: 28px;
+  color: yellow;
+  margin-bottom: 25px;
+}
+
+.short-review {
+  font-size: 20px;
+  line-height: 1.5;
+  margin-bottom: 25px;
+  color: black;
+}
+
+.full-review {
+  font-size: 18px;
+  line-height: 1.6;
+  color: white;
+}
+
+/* Animation */
+@keyframes scrollLeft {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes scrollRight {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .reviews-title {
+    font-size: 30px;
+  }
+
+  .review-card {
+    min-width: 280px;
+    max-width: 280px;
+    padding: 20px;
+  }
+
+  .short-review {
+    font-size: 16px;
+  }
+
+  .full-review {
+    font-size: 14px;
+  }
+}
+/* ================= CATEGORIES SECTION ================= */
+.categories-section {
+  max-width: 1200px;
+  margin: 60px auto;
+  padding: 0 20px;
+}
+
+.categories-title {
+  text-align: center;
+  font-size: 36px;
+  color: #00a650;
+  font-weight: 700;
+  margin-bottom: 35px;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 22px;
+}
+
+.category-card {
+  background: white;
+  border-radius: 50%;
+  padding: 20px;
+  text-align: center;
+  text-decoration: none;
+  color: #222;
+  
+  transition: 0.3s;
+}
+
+.category-card:hover {
+  transform: translateY(-5px);
+}
+
+.category-card img {
+  width: 100%;
+  height: 100px;
+  object-fit: contain;
+}
+
+.category-card p {
+  margin-top: 12px;
+  font-weight: 700;
+}
+
+/* Responsive */
+@media(max-width:900px){
+  .categories-grid{
+    grid-template-columns: repeat(3,1fr);
+  }
+}
+
+@media(max-width:600px){
+  .categories-grid{
+    grid-template-columns: repeat(2,1fr);
+  }
+}
+  </style>
+<header class="navbar">
+    
+    <!-- Logo -->
+ <div class="logo">
+    <img src="{% static 'image/image 63.png' %}" alt="logo">
+    <div class="logo-text">
+        <h2>SELLER</h2>
+        <p><span style="color: black;">E-COM</span> <span style="color: #F6E63B;"> Delivery</span> </p>
+    </div>
+</div>
+
+    <!-- Search -->
+    <div class="search-box">
+        <input type="text" placeholder="Search for products, brand and more">
+        <span class="search-icon">🔍</span>
+    </div>
+
+    <!-- Right Menu -->
+    <div class="nav-right">
+        <a href="{% url 'eshop:seller_home' %}"><i class="fa-solid fa-tag"></i>  Become a Seller</a>
+        <a href="{% url 'eshop:cart' %}"><i class="fa-solid fa-cart-shopping"></i>  Carts</a>
+      
+        {% if user.is_authenticated %}
+<div class="user-menu">
+<button class="user-btn" onclick="toggleUserPopup()">
+    <img src="{% static 'image/user1.png' %}" alt="User" class="user-avatar">
+    {{ user.first_name|default:user.username }}
+    <i class="fa fa-chevron-down"></i>
+</button>
+
+    <div id="userPopup" class="user-popup">
+        <a href="{% url 'eshop:profile' %}">My Profile</a>
+        <a href="{% url 'eshop:wishlist' %}"> Wishlist</a>
+    <a href="{% url 'eshop:profile' %}?tab=orders"></i> My Orders</a>
+    <a href="{% url 'eshop:notifications' %}">Notifications</a>
+    <a href="{% url 'eshop:order_status' %}"> Order Status</a>
+        <a href="{% url 'eshop:logout' %}">
+             Logout
+        </a>
+    </div>
+</div>
+{% else %}
+<button class="login-btn" onclick="openLoginModal()">Login <i class="fa fa-chevron-down"></i></button>
+{% endif %}
+         <a href="{% url 'eshop:enquiry' %}"><span class="support"> 24/7 <br> <i class="fa-solid fa-headset"></i></span></a>
+    </div>
+
+</header>
+
+<!-- SECOND NAV -->
+<nav class="menu desktop-menu">
+    <a href="{% url 'eshop:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+        Home
+        {% if request.resolver_match.url_name == 'index' %}
+        <span class="dot-right"></span>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'eshop:categories' %}" class="{% if request.resolver_match.url_name == 'categories' %}active{% endif %}">
+        Categories
+        {% if request.resolver_match.url_name == 'categories' %}
+        <span class="dot-right"></span>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'eshop:blog' %}" class="{% if request.resolver_match.url_name == 'blog' %}active{% endif %}">
+        Blog
+        {% if request.resolver_match.url_name == 'blog' %}
+        <span class="dot-right"></span>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'eshop:contact' %}" class="{% if request.resolver_match.url_name == 'contact' %}active{% endif %}">
+        Contact us
+        {% if request.resolver_match.url_name == 'contact' %}
+        <span class="dot-right"></span>
+        {% endif %}
+    </a>
+
+    <a href="{% url 'eshop:about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">
+        About us
+        {% if request.resolver_match.url_name == 'about' %}
+        <span class="dot-right"></span>
+        {% endif %}
+    </a>
+</nav>
+
+
+
+<!-- ── HERO BANNER ── -->
+<section class="hero">
+  <div class="hero-container">
+
+    <!-- Left Image -->
+    <div class="hero-image">
+      <img src="{% static 'image/banner.png' %}"> 
+    </div>
+
+    <!-- Right Content -->
+    <div class="hero-content">
+      <h1>Everything You Need, Delivered<br><br>
+      <span style="margin-left: 20%;">to Your Doorstep.</span> </h1>
+
+      <p>
+        From electronics to essentials — shop premium<br>
+        products with unbeatable prices & lightning-fast<br> delivery.
+      </p>
+
+      <div class="hero-actions">
+        <button class="shop-btn">Shop now</button>
+
+        <div class="users">
+          <img src="{% static 'image/user1.png' %}">
+          <span style="height: 45px;"><img src="{% static 'image/user2.jpg' %}"></span>
+          <span style="height: 25px;"></span><img src="{% static 'image/user3.jpg' %}"></span>
+          <span style="height: 15px;"></span><img src="{% static 'image/user4.avif' %}"></span>
+          <div class="plus">+</div>
+        </div>
+      </div>
+
+      <div class="ratings">
+        <strong>4.9k Ratings+</strong>
+        <span>Trusted by 50k customers</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+ <h2 class="section-title">Why Choose Us!</h2>
+<section class="features-section">
+ 
+<div class="feature-box">
+
+  <div class="feature">
+    <img src="{% static 'image/earbuds.png' %}" alt="High Quality Products">
+  </div>
+
+  <h4>High Quality Products</h4>
+
+</div>
+
+<div class="feature-box">
+  <div class="feature">
+    <img src="{% static 'image/trust.png' %}" alt="Fast Delivery">
+    </div>
+    <h4>Trusted Platform</h4>
+   
+  </div>
+  <div class="feature-box">
+  <div class="feature">
+    <img src="{% static 'image/delivery.png' %}" alt="Best Prices">
+    </div>
+    <h4>Fast & Reliable Delivery</h4>
+   
+  </div>
+<div class="feature-box">
+    <div class="feature">
+    <img src="{% static 'image/payment.png' %}" alt="Best Prices">
+    </div>
+    <h4>Easy & Secure Payments</h4>
+   
+  </div>
+</section> 
+
+
+<section class="categories-section">
+  <h2 class="categories-title">Shop by Categories</h2>
+
+  <div class="categories-grid">
+
+    <a href="{% url 'eshop:categories' %}" class="category-card">
+      <img src="{% static 'image/vegetable.png' %}" alt="">
+      <p>Vegetables</p>
+    </a>
+
+    <a href="{% url 'eshop:categories' %}" class="category-card">
+      <img src="{% static 'image/fruit.png' %}" alt="">
+      <p>Fresh Fruits</p>
+    </a>
+
+    <a href="{% url 'eshop:categories' %}" class="category-card">
+      <img src="{% static 'image/milk.png' %}" alt="">
+      <p>Milk&Egg</p>
+    </a>
+
+    <a href="{% url 'eshop:categories' %}" class="category-card">
+      <img src="{% static 'image/dr.png' %}" alt="">
+      <p>Dry Fruits</p>
+    </a>
+
+    <a href="{% url 'eshop:categories' %}" class="category-card">
+      <img src="{% static 'image/h1.png' %}" alt="">
+      <p>House Hold</p>
+    </a>
+
+   
+
+  </div>
+</section>
+
+<!-- ================= DEALS SECTION ================= -->
+<section class="deals-section">
+  <h2 class="deals-heading">Deals Flat 25% Off</h2>
+
+  <div class="deals-grid">
+    {% for deal in deal_products %}
+    <div class="deal-card">
+
+      <!-- Card Top -->
+      <div class="card-top">
+
+        <!-- Discount Badge -->
+        <div class="discount-badge">
+          {{ deal.discount_percent|default:"25" }}%<br>Off
+        </div>
+
+        <!-- Wishlist Button -->
+        <button class="wishlist-btn"
+                onclick="toggleWishlist(this, '{{ deal.id|default:0 }}')">
+          <svg viewBox="0 0 24 24">
+            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67
+                     l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06
+                     L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
+          </svg>
+        </button>
+
+        <!-- Product Image -->
+        {% if deal.image %}
+          <img class="card-img"
+               src="{{ deal.image.url }}"
+               alt="{{ deal.name }}">
+        {% else %}
+          <img class="card-img"
+               src="https://via.placeholder.com/300x220?text={{ deal.name }}"
+               alt="{{ deal.name }}">
+        {% endif %}
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+
+        <div class="card-meta">
+          <span class="card-category">{{ deal.name }}</span>
+          <span class="card-rating">⭐ {{ deal.rating|default:"4.5" }}</span>
+        </div>
+
+        <p class="card-name">
+          {{ deal.subtitle|default:"Premium Product Offer" }}
+        </p>
+
+        <p class="card-desc">
+          {{ deal.quantity_info|default:"Best Deal Available" }}
+        </p>
+
+        <div class="card-footer">
+          <span class="card-price">₹{{ deal.price }}</span>
+
+          <button class="add-btn"
+                  onclick="addToCart('{{ deal.id|default:0 }}')">
+            Add <i class="fa-solid fa-cart-arrow-down"></i>
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    {% empty %}
+    <!-- Fallback Static Deals -->
+    <div class="deal-card">
+      <div class="card-top">
+        <div class="discount-badge">25%<br>Off</div>
+        <img class="card-img"
+             src="{% static 'image/acce.png' %}"
+             alt="Special Deal">
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-category">Accessories</span>
+          <span class="card-rating">⭐ 4.5</span>
+        </div>
+        <p class="card-name">Engine and Tyres</p>
+        <p class="card-desc">Weight 2.5t</p>
+        <div class="card-footer">
+          <span class="card-price">$56</span>
+          <button class="add-btn">Add <i class="fa-solid fa-cart-arrow-down"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="deal-card">
+      <div class="card-top">
+        <div class="discount-badge">20%<br>Off</div>
+        <img class="card-img"
+             src="{% static 'image/acce2.png' %}"
+             alt="Hot Deal">
+             
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-category">Accessories Gadgts</span>
+          <span class="card-rating">⭐ 4.5</span>
+        </div>
+        <p class="card-name">Electronic combo Accessories</p>
+        <p class="card-desc">10 sets</p>
+        <div class="card-footer">
+          <span class="card-price">$56</span>
+          <button class="add-btn">Add <i class="fa-solid fa-cart-arrow-down"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="deal-card">
+      <div class="card-top">
+        <div class="discount-badge">30%<br>Off</div>
+        <img class="card-img"
+             src="{% static 'image/life style.png' %}"
+             alt="Mega Sale">
+      </div>
+      <div class="card-body">
+        <div class="card-meta">
+          <span class="card-category">Life Style</span>
+          <span class="card-rating">⭐ 4.5</span>
+        </div>
+        <p class="card-name">T-shirt & combo Sets</p>
+        <p class="card-desc">3 sets</p>
+        <div class="card-footer">
+          <span class="card-price">$56</span>
+          <button class="add-btn">Add <i class="fa-solid fa-cart-arrow-down"></i></button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<script id="x30j8x">
+function addToCart(productId){
+    alert("Product added to cart!");
+}
+
+function toggleWishlist(button, productId){
+    button.classList.toggle("active");
+}
+</script>
+
+
+
+
+<!-- ================= CUSTOMER REVIEWS SECTION ================= -->
+<section class="reviews-section">
+  <h2 class="reviews-title">Our Customer Reviews</h2>
+
+  {% if reviews %}
+  <div class="reviews-wrapper">
+
+    <!-- Row 1 -->
+    <div class="reviews-track reviews-left">
+      {% for review in reviews %}
+      <div class="review-card">
+        <div class="review-avatar">
+          {% if review.image %}
+            <img src="{{ review.image.url }}" alt="{{ review.reviewer_name }}">
+          {% else %}
+            <img src="{% static 'image/default-user.png' %}" alt="user">
+          {% endif %}
+        </div>
+
+        <h3>{{ review.reviewer_name }}</h3>
+
+        <div class="stars">
+          {% for i in "12345"|make_list %}
+            ⭐
+          {% endfor %}
+        </div>
+
+        <p class="short-review">{{ review.short_text }}</p>
+        <p class="full-review">{{ review.full_text }}</p>
+      </div>
+      {% endfor %}
+
+      {% for review in reviews %}
+      <div class="review-card">
+        <div class="review-avatar">
+          {% if review.image %}
+            <img src="{{ review.image.url }}" alt="{{ review.reviewer_name }}">
+          {% else %}
+            <img src="{% static 'image/default-user.png' %}" alt="user">
+          {% endif %}
+        </div>
+
+        <h3>{{ review.reviewer_name }}</h3>
+
+        <div class="stars">
+          {% for i in "12345"|make_list %}
+            ⭐
+          {% endfor %}
+        </div>
+
+        <p class="short-review">{{ review.short_text }}</p>
+        <p class="full-review">{{ review.full_text }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    <!-- Row 2 -->
+    <div class="reviews-track reviews-right">
+      {% for review in reviews %}
+      <div class="review-card">
+        <div class="review-avatar">
+          {% if review.image %}
+            <img src="{{ review.image.url }}" alt="{{ review.reviewer_name }}">
+          {% else %}
+            <img src="{% static 'image/default-user.png' %}" alt="user">
+          {% endif %}
+        </div>
+
+        <h3>{{ review.reviewer_name }}</h3>
+
+        <div class="stars">
+          {% for i in "12345"|make_list %}
+            ⭐
+          {% endfor %}
+        </div>
+
+        <p class="short-review">{{ review.short_text }}</p>
+        <p class="full-review">{{ review.full_text }}</p>
+      </div>
+      {% endfor %}
+
+      {% for review in reviews %}
+      <div class="review-card">
+        <div class="review-avatar">
+          {% if review.image %}
+            <img src="{{ review.image.url }}" alt="{{ review.reviewer_name }}">
+          {% else %}
+            <img src="{% static 'image/default-user.png' %}" alt="user">
+          {% endif %}
+        </div>
+
+        <h3>{{ review.reviewer_name }}</h3>
+
+        <div class="stars">
+          {% for i in "12345"|make_list %}
+            ⭐
+          {% endfor %}
+        </div>
+
+        <p class="short-review">{{ review.short_text }}</p>
+        <p class="full-review">{{ review.full_text }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+
+  {% else %}
+  <!-- Fallback Reviews -->
+  <div class="reviews-wrapper">
+    <div class="reviews-track reviews-left">
+
+      <div class="review-card">
+        <div class="review-avatar">
+          <img src="{% static 'image/john.png' %}" alt="user">
+        </div>
+        <h3>John Das</h3>
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <p class="short-review">Excellent service and fast delivery.</p>
+        <p class="full-review">The products were fresh and exactly as expected. Highly recommended.</p>
+      </div>
+
+      <div class="review-card">
+        <div class="review-avatar">
+          <img src="{% static 'image/liyanas.png' %}" alt="user">
+        </div>
+        <h3>Liyanas</h3>
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <p class="short-review">Amazing discounts and offers.</p>
+        <p class="full-review">Very affordable prices with quality products. Will order again.</p>
+      </div>
+
+      <div class="review-card">
+        <div class="review-avatar">
+          <img src="{% static 'image/andreya.png' %}" alt="user">
+        </div>
+        <h3>Andreya</h3>
+        <div class="stars">⭐⭐⭐⭐⭐</div>
+        <p class="short-review">Super quick delivery.</p>
+        <p class="full-review">Received my order within minutes. Very impressed with the service.</p>
+      </div>
+
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+
+<section class="faq-section">
+
+  <h2 class="faq-title">FAQ</h2>
+
+  <div class="faq-container">
+
+    <!-- ITEM 1 (OPEN) -->
+    <div class="faq-item active">
+      <div class="faq-question">
+        <h3>1. How do I place an order on the website?</h3>
+        <span class="icon">⌄</span>
+      </div>
+      <div class="faq-answer">
+        <p>
+          You can browse the categories, select your products, add them to your cart, and proceed to checkout.
+          Choose your <br> delivery address and complete payment to place the order.
+        </p>
+      </div>
+    </div>
+
+    <!-- ITEM 2 -->
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>2. Do I need an account to place an order?</h3>
+        <span class="icon">⌃</span>
+      </div>
+      <div class="faq-answer">
+        <p>Yes, you need to create an account or log in. This helps us savw\e our address, track our orders, and <br>
+        provide a better shopping experience.</p>
+      </div>
+    </div>
+
+    <!-- ITEM 3 -->
+    <div class="faq-item">
+      <div class="faq-question">
+        <h3>3. How do I register as a seller?</h3>
+        <span class="icon">⌃</span>
+      </div>
+      <div class="faq-answer">
+        <p>Click on "Become a Seller", enter your mobile number, business details, GST number(if applicable), pickup address,<br>
+        and bank details to complete our registration.</p>
+      </div>
+    </div>
+
+
+    <!-- ITEM 4 -->
+        <div class="faq-item">
+      <div class="faq-question">
+        <h3>4. Are all products available for instant delivery?</h3>
+        <span class="icon">⌃</span>
+      </div>
+      <div class="faq-answer">
+        <p>Most products are available for fast delivery. Products availability may vary based on your location and <br>
+        inventory.</p>
+      </div>
+    </div>
+
+    <!-- ITEM 5 -->
+
+        <div class="faq-item">
+      <div class="faq-question">
+        <h3>5. How do I reorder items I previouly purchased?</h3>
+        <span class="icon">⌃</span>
+      </div>
+      <div class="faq-answer">
+        <p>You can reorder quickly by clicking "Reorder" in your order history. All previoussly bought items will be<br>
+        added to the cart.</p>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+
+<script>
+  const faqItems = document.querySelectorAll(".faq-item");
+
+  faqItems.forEach(item => {
+    item.querySelector(".faq-question").addEventListener("click", () => {
+
+      // close others
+      faqItems.forEach(i => {
+        if (i !== item) i.classList.remove("active");
+      });
+
+      // toggle current
+      item.classList.toggle("active");
+    });
+  });
+</script>
+
+
+
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+
+  <div class="footer-container">
+
+    <!-- LOGO -->
+    <div class="footer-col logo-col">
+      <img src="{% static 'image/image 63.png' %}" alt="logo">
+      <h3>SELLER</h3>
+      <p>E-COM <span style="color: #F6E63B;"> Delivery</span></p>
+    </div>
+
+    <!-- LINKS 1 -->
+    <div class="footer-col">
+      <a href="#">Customer Service</a>
+      <a href="#">My Account</a>
+      <a href="#">Checkup</a>
+      <a href="#">FAQ</a>
+      <a href="#">Return</a>
+    </div>
+
+    <!-- LINKS 2 -->
+    <div class="footer-col">
+      <a href="#">Company</a>
+      <a href="#">About us</a>
+      <a href="#">Blogs</a>
+      <a href="#">Contact us</a>
+      <a href="#">Career</a>
+    </div>
+
+    <!-- LINKS 3 -->
+    <div class="footer-col">
+      <a href="#">Our information</a>
+      <a href="#">Privacy</a>
+      <a href="#">Terms & Condition</a>
+      <a href="#">Customer Feed back</a>
+    </div>
+
+    <!-- CONTACT -->
+    <div class="footer-col">
+      <p>Mobile: 123-456-789</p>
+      <p>Email: vibeygif@gmail.com</p>
+      <p>Address: 12, north city-001</p>
+
+
+
+        <!-- SOCIAL ICONS -->
+  <div class="social-icons">
+    <a href="#"><i class="fab fa-whatsapp"></i></a>
+    <a href="#"><i class="fab fa-facebook-f"></i></a>
+    <a href="#"><i class="fab fa-instagram"></i></a>
+  </div> 
+
+
+    </div>
+
+  </div>
+<!-- DOTTED LINE -->
+<hr class="footer-line">
+
+<!-- COPYRIGHT -->
+<div class="footer-bottom">
+  <p>© 2025 Seller.co.in All rights reserved.</p>
+  <p>Terms & Conditions | Privacy Policy</p>
+</div>
+</footer>
+
+
+
+
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <!-- LEFT LOGIN -->
+        <div class="login-box">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+
+            <h2>Register Free !</h2>
+
+            <form method="POST" action="{% url 'eshop:login' %}">
+                {% csrf_token %}
+
+                <input type="email" name="email" placeholder="Enter your e-mail" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <!-- Login Button + Forgot Password -->
+                <div class="login-actions">
+                    <button type="submit">Login</button>
+                    <a href="#" class="forgot-link">Forget your password?</a>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Sign Up Using</span>
+                </div>
+
+                <!-- Social Media Icons -->
+                <div class="social-login">
+                    <a href="#"><i class="fab fa-google"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+
+                <!-- Signup Link -->
+                <p class="signup-text">
+                    Don’t have an account ?
+                    <a href="#" onclick="openSignupModal()">Create New Account</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Login Image">
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ================= SIGNUP MODAL ================= -->
+<div id="signupModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <div class="login-box">
+            <span class="close-btn" onclick="closeSignupModal()">&times;</span>
+
+            <h2>Sign Up</h2>
+
+            <form method="POST" action="{% url 'eshop:signup' %}" onsubmit="return validateSignup()">
+                {% csrf_token %}
+
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+                <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
+
+                <small id="passwordError" style="color:red;"></small>
+
+                <div class="login-actions">
+                    <button type="submit">Sign Up</button>
+                </div>
+
+                <p class="signup-text">
+                    Already have an account ?
+                    <a href="#" onclick="backToLogin()">log in</a>
+                </p>
+            </form>
+        </div>
+
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Signup Image" >
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup" class="success-popup">
+    <div class="success-box">
+        <div class="tick-circle">✔</div>
+        <h3>Login Successful</h3>
+    </div>
+</div>
+
+<script>
+function openLoginModal(){
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function closeLoginModal(){
+    document.getElementById("loginModal").style.display="none";
+}
+
+function openSignupModal(){
+    document.getElementById("loginModal").style.display="none";
+    document.getElementById("signupModal").style.display="flex";
+}
+
+function closeSignupModal(){
+    document.getElementById("signupModal").style.display="none";
+}
+
+function backToLogin(){
+    document.getElementById("signupModal").style.display="none";
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function toggleUserPopup(){
+    document.getElementById("userPopup").classList.toggle("show");
+}
+
+window.onclick = function(event){
+    if(!event.target.closest('.user-menu')){
+        let popup=document.getElementById("userPopup");
+        if(popup){
+            popup.classList.remove("show");
+        }
+    }
+}
+
+
+
+
+function toggleWishlist(button, productId) {
+
+    fetch('/wishlist/toggle/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': CSRF_TOKEN
+      },
+      body: JSON.stringify({
+        product_id: productId
+      })
+    })
+    .then(res => {
+      if (!res.ok) throw new Error("Login required");
+      return res.json();
+    })
+    .then(data => {
+
+      if (data.added) {
+        button.classList.add('active');
+        showToast("Added to wishlist ❤️");
+      } else {
+        button.classList.remove('active');
+        showToast("Removed from wishlist ❌");
+      }
+
+    })
+    .catch(() => {
+      showToast("Please login first ⚠️");
+      window.location.href = "/login/";
+    });
+  }
+
+  
+</script>
+
+
+
+
+</body>
+</html>

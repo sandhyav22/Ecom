@@ -1,0 +1,539 @@
+{% extends "eshop/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  /* ===== PAGE ===== */
+  .track-page {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  .track-page h2 {
+    text-align: center;
+    font-size: 28px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 6px;
+  }
+
+  .track-page .sub-label {
+    font-size: 15px;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+  }
+
+  .order-id-label {
+    font-size: 15px;
+    color: #555;
+    margin-bottom: 28px;
+  }
+
+  .order-id-label span {
+    font-weight: 700;
+    color: #111;
+  }
+
+  /* ===== TRACKER CARD ===== */
+  .tracker-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    padding: 40px 36px;
+    margin-bottom: 24px;
+    overflow-x: auto;
+  }
+
+  /* ===== STEP TRACK ===== */
+  .step-track {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    position: relative;
+    min-width: 560px;
+  }
+
+  /* connecting line behind steps */
+  .step-track::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    right: 18px;
+    height: 4px;
+    background: #e0e0e0;
+    z-index: 0;
+    border-radius: 2px;
+  }
+
+  /* filled green progress line */
+  .step-track .progress-line {
+    position: absolute;
+    top: 18px;
+    left: 18px;
+    height: 4px;
+    background: #00a650;
+    z-index: 1;
+    border-radius: 2px;
+    transition: width 0.8s ease;
+  }
+
+  /* each step column */
+  .step-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    z-index: 2;
+    position: relative;
+  }
+
+  /* step label above */
+  .step-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    margin-bottom: 2px;
+  }
+
+  /* circle — default grey */
+  .step-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 3px solid #ddd;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.4s, background 0.4s;
+  }
+
+  .step-circle svg {
+    width: 18px;
+    height: 18px;
+    stroke: #ddd;
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    transition: stroke 0.4s;
+  }
+
+  /* completed step */
+  .step-col.done .step-circle {
+    border-color: #00a650;
+    background: #e8f7ee;
+  }
+
+  .step-col.done .step-circle svg { stroke: #00a650; }
+  .step-col.done .step-name        { color: #00a650; }
+
+  /* active (current) step */
+  .step-col.active .step-circle {
+    border-color: #00a650;
+    background: #00a650;
+  }
+
+  .step-col.active .step-circle svg { stroke: #fff; }
+
+  /* date/time below circle */
+  .step-date {
+    font-size: 12px;
+    color: #555;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  .step-date .expected-label {
+    font-size: 11px;
+    color: #999;
+    display: block;
+  }
+
+  /* ===== ORDER ITEMS CARD ===== */
+  .order-items-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 24px;
+  }
+
+  .items-header {
+    display: grid;
+    grid-template-columns: 120px 1fr 160px 120px;
+    padding: 16px 24px;
+    border-bottom: 1px solid #e8e8e8;
+    gap: 16px;
+  }
+
+  .items-header span {
+    font-size: 14px;
+    font-weight: 600;
+    color: #444;
+  }
+
+  .order-item-row {
+    display: grid;
+    grid-template-columns: 120px 1fr 160px 120px;
+    align-items: center;
+    padding: 20px 24px;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 16px;
+  }
+
+  .order-item-row:last-child { border-bottom: none; }
+
+  .order-item-img {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #f5f5f5;
+    border: 2px solid #e8e8e8;
+  }
+
+  .item-name  { font-size: 15px; font-weight: 500; color: #222; line-height: 1.5; }
+  .item-date  { font-size: 14px; color: #666; }
+  .item-price { font-size: 16px; font-weight: 700; color: #00a650; }
+
+  /* ===== NO ORDER ===== */
+  .no-order {
+    text-align: center;
+    padding: 60px 20px;
+    color: #aaa;
+    font-size: 15px;
+  }
+
+  /* ===== SEARCH BAR (optional) ===== */
+  .track-search {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 28px;
+    flex-wrap: wrap;
+  }
+
+  .track-search input {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 18px;
+    font-size: 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 10px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .track-search input:focus { border-color: #00a650; }
+
+  .track-search button {
+    background: #00a650;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .track-search button:hover { background: #008c42; }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 768px) {
+    .items-header { display: none; }
+
+    .order-item-row {
+      grid-template-columns: 80px 1fr;
+      grid-template-rows: auto auto auto;
+      gap: 6px 12px;
+    }
+
+    .order-item-img { width: 70px; height: 70px; }
+    .item-date      { grid-column: 1 / 3; font-size: 12px; color: #999; }
+    .item-price     { grid-column: 1 / 3; }
+  }
+
+  @media (max-width: 480px) {
+    .track-page { padding: 0 12px; margin: 24px auto; }
+    .track-page h2 { font-size: 22px; }
+    .tracker-card { padding: 24px 14px; }
+    .step-name  { font-size: 11px; }
+    .step-date  { font-size: 11px; }
+  }
+</style>
+
+<div class="track-page">
+  <h2>Track Your Order</h2>
+
+  <!-- search bar -->
+  <form method="GET" action="">
+    <div class="track-search">
+      <input type="text" name="order_id"
+             value="{{ search_order_id|default:'' }}"
+             placeholder="Enter Order ID e.g. #SJKD456FH" />
+      <button type="submit">Track</button>
+    </div>
+  </form>
+
+  {% if order %}
+
+  <div class="sub-label">order status</div>
+  <div class="order-id-label">Order Id: <span>{{ order.order_id }}</span></div>
+
+  <!-- ── PROGRESS TRACKER ── -->
+  <div class="tracker-card">
+    <div class="step-track" id="stepTrack">
+
+      <!-- filled progress line (width set by JS) -->
+      <div class="progress-line" id="progressLine"></div>
+
+      {% for step in steps %}
+      <div class="step-col {{ step.state }}" id="step-{{ forloop.counter }}">
+        <div class="step-name">{{ step.label }}</div>
+        <div class="step-circle">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="step-date">
+          {% if step.timestamp %}
+            {{ step.timestamp }}<br>{{ step.time }}
+          {% else %}
+            <span class="expected-label">Expected</span>
+            {{ step.expected_date }}
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+
+    </div>
+  </div>
+
+  <!-- ── ORDER ITEMS ── -->
+  <div class="order-items-card">
+    <div class="items-header">
+      <span></span>
+      <span>Product</span>
+      <span>Date</span>
+      <span>Price</span>
+    </div>
+
+    {% for item in order.items.all %}
+    <div class="order-item-row">
+      {% if item.product and item.product.image %}
+        <img class="order-item-img" src="{{ item.product.image.url }}" alt="{{ item.name }}" />
+      {% else %}
+        <img class="order-item-img"
+             src="https://via.placeholder.com/90?text={{ item.name|urlencode }}"
+             alt="{{ item.name }}" />
+      {% endif %}
+      <div class="item-name">{{ item.name }}</div>
+      <div class="item-date">{{ order.created_at|date:"d F Y" }}</div>
+      <div class="item-price">${{ item.price }}</div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% elif search_order_id %}
+  <div class="no-order">
+    <i class="fa fa-search" style="font-size:40px;color:#ccc;display:block;margin-bottom:14px;"></i>
+    No order found with ID <strong>{{ search_order_id }}</strong>.<br>
+    Please check the order ID and try again.
+  </div>
+
+  {% else %}
+  <div class="no-order">
+    <i class="fa fa-truck" style="font-size:40px;color:#ccc;display:block;margin-bottom:14px;"></i>
+    Enter your Order ID above to track your order.
+  </div>
+  {% endif %}
+
+</div>
+
+<script>
+  // Animate progress line to fill between completed steps
+  window.addEventListener('DOMContentLoaded', () => {
+    const track     = document.getElementById('stepTrack');
+    const progLine  = document.getElementById('progressLine');
+    if (!track || !progLine) return;
+
+    const cols   = track.querySelectorAll('.step-col');
+    const total  = cols.length;
+    let lastDone = -1;
+
+    cols.forEach((col, i) => {
+      if (col.classList.contains('done') || col.classList.contains('active')) {
+        lastDone = i;
+      }
+    });
+
+    if (lastDone < 0) { progLine.style.width = '0%'; return; }
+
+    // Calculate % based on position of the last completed circle
+    const trackW  = track.offsetWidth;
+    const circles = track.querySelectorAll('.step-circle');
+    if (!circles[lastDone]) return;
+
+    const circleRect = circles[lastDone].getBoundingClientRect();
+    const trackRect  = track.getBoundingClientRect();
+    const centerX    = circleRect.left + circleRect.width / 2 - trackRect.left;
+    const pct        = (centerX / trackW) * 100;
+
+    // animate after short delay
+    setTimeout(() => { progLine.style.width = pct + '%'; }, 100);
+  });
+</script>
+
+{% endblock %}
+
+
+
+
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <!-- LEFT LOGIN -->
+        <div class="login-box">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+
+            <h2>Register Free !</h2>
+
+            <form method="POST" action="{% url 'eshop:login' %}">
+                {% csrf_token %}
+
+                <input type="email" name="email" placeholder="Enter your e-mail" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <!-- Login Button + Forgot Password -->
+                <div class="login-actions">
+                    <button type="submit">Login</button>
+                    <a href="#" class="forgot-link">Forget your password?</a>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Sign Up Using</span>
+                </div>
+
+                <!-- Social Media Icons -->
+                <div class="social-login">
+                    <a href="#"><i class="fab fa-google"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+
+                <!-- Signup Link -->
+                <p class="signup-text">
+                    Don’t have an account ?
+                    <a href="#" onclick="openSignupModal()">Create New Account</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Login Image">
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ================= SIGNUP MODAL ================= -->
+<div id="signupModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <div class="login-box">
+            <span class="close-btn" onclick="closeSignupModal()">&times;</span>
+
+            <h2>Sign Up</h2>
+
+            <form method="POST" action="{% url 'eshop:signup' %}" onsubmit="return validateSignup()">
+                {% csrf_token %}
+
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+                <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
+
+                <small id="passwordError" style="color:red;"></small>
+
+                <div class="login-actions">
+                    <button type="submit">Sign Up</button>
+                </div>
+
+                <p class="signup-text">
+                    Already have an account ?
+                    <a href="#" onclick="backToLogin()">log in</a>
+                </p>
+            </form>
+        </div>
+
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Signup Image">
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup" class="success-popup">
+    <div class="success-box">
+        <div class="tick-circle">✔</div>
+        <h3>Login Successful</h3>
+    </div>
+</div>
+
+<script>
+function openLoginModal(){
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function closeLoginModal(){
+    document.getElementById("loginModal").style.display="none";
+}
+
+function openSignupModal(){
+    document.getElementById("loginModal").style.display="none";
+    document.getElementById("signupModal").style.display="flex";
+}
+
+function closeSignupModal(){
+    document.getElementById("signupModal").style.display="none";
+}
+
+function backToLogin(){
+    document.getElementById("signupModal").style.display="none";
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function toggleUserPopup(){
+    document.getElementById("userPopup").classList.toggle("show");
+}
+
+window.onclick = function(event){
+    if(!event.target.closest('.user-menu')){
+        let popup=document.getElementById("userPopup");
+        if(popup){
+            popup.classList.remove("show");
+        }
+    }
+}
+</script>
+
+
+

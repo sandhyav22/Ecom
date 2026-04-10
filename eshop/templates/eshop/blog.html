@@ -1,0 +1,523 @@
+{% extends "eshop/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+
+/* SECTION */
+.blog-section {
+  padding: 60px 20px;
+  background: #f5f5f5;
+}
+
+/* HEADING */
+.blog-section h1 {
+  text-align: center;
+  font-size: 32px;
+  margin-bottom: 50px;
+  font-weight: 700;
+}
+
+/* BLOG CONTAINER */
+.blog-container {
+  max-width: 1100px;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+/* BLOG CARD */
+.blog-card {
+  background: #fff;
+  padding: 30px;
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+  transition: 0.3s;
+}
+
+.blog-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(0,0,0,0.2);
+}
+
+/* ICON */
+.blog-icon {
+  min-width: 45px;
+  height: 45px;
+  background: #C3E01F;
+  color: white;
+  font-size: 22px;
+  font-weight: bold;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* CONTENT */
+.blog-content h3 {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.blog-content p {
+  font-size: 22px;
+  color: black;
+  line-height: 1.6;
+}
+
+/* TABLET */
+@media (max-width: 992px) {
+  .blog-section h1 {
+    font-size: 30px;
+  }
+
+  .blog-card {
+    padding: 25px;
+  }
+
+  .blog-content h3 {
+    font-size: 20px;
+  }
+
+  .blog-content p {
+    font-size: 16px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+
+  .blog-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .blog-icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+  }
+
+  .blog-section h1 {
+    font-size: 26px;
+  }
+
+  .blog-content h3 {
+    font-size: 18px;
+  }
+
+  .blog-content p {
+    font-size: 15px;
+  }
+}
+/* IMAGE BANNER */
+.blog-banner {
+  margin-top: 50px;
+  width: 100%;
+}
+
+.blog-banner img {
+  width: 100%;
+  height: auto;
+  display: block;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* TABLET */
+@media (max-width: 992px) {
+  .blog-banner {
+    margin-top: 40px;
+  }
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .blog-banner {
+    margin-top: 30px;
+  }
+
+  .blog-banner img {
+    border-radius: 10px;
+  }
+}
+/* Hamburger hidden desktop */
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Mobile menu hidden initially */
+.mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: white;
+    width: 100%;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.mobile-menu a {
+    padding: 12px;
+    text-decoration: none;
+    color: black;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+
+    .desktop-menu {
+        display: none !important;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .search-box {
+        width: 50%;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+    }
+
+    .mobile-menu.show {
+        display: flex;
+    }
+}
+/* LOGIN CONTAINER */
+.login-container {
+    display: flex;
+    width: 850px;
+    max-width: 95%;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0px 10px 35px rgba(0,0,0,0.2);
+}
+
+/* LOGIN BOX */
+.login-box {
+    width: 50%;
+    padding: 40px;
+    position: relative;
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+/* INPUTS */
+.login-box input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 18px;
+    border: 2px solid #00b33c;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+/* ACTIONS */
+.login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.login-actions button {
+    background: #00c83c;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.forgot-link {
+    font-size: 14px;
+    color: #444;
+    text-decoration: none;
+}
+
+/* DIVIDER */
+.divider {
+    text-align: center;
+    margin: 25px 0;
+    position: relative;
+}
+
+.divider span {
+    background: white;
+    padding: 0 15px;
+    font-weight: bold;
+    color: #555;
+}
+
+.divider::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: #ccc;
+    top: 50%;
+    left: 0;
+    z-index: -1;
+}
+
+/* SOCIAL LOGIN */
+.social-login {
+    display: flex;
+    justify-content: space-around;
+    border: 1px solid #ddd;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.social-login a {
+    color: #333;
+    font-size: 20px;
+    transition: 0.3s;
+}
+
+.social-login a:hover {
+    transform: scale(1.2);
+    color: green;
+}
+
+/* SIGNUP TEXT */
+.signup-text {
+    text-align: center;
+    font-size: 15px;
+}
+
+.signup-text a {
+    color: green;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* RIGHT IMAGE */
+.login-image {
+    width: 50%;
+    background: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-image img {
+    width: 70%;
+    max-height: 350px;
+    object-fit: contain;
+}
+</style>
+
+<section class="blog-section">
+
+  <h1>Blog Section</h1>
+
+  <div class="blog-container">
+
+    <!-- BLOG 1 -->
+    <div class="blog-card">
+      <div class="blog-icon">✔</div>
+      <div class="blog-content">
+        <h3>How to Choose the Right Product Online</h3>
+        <p>
+          Learn simple tips to compare features, read real customer reviews,
+          and identify high-quality products before you buy.
+        </p>
+      </div>
+    </div>
+
+    <!-- BLOG 2 -->
+    <div class="blog-card">
+      <div class="blog-icon">✔</div>
+      <div class="blog-content">
+        <h3>Top Trending Products This Month</h3>
+        <p>
+          Explore the latest trending items across fashion, electronics,
+          home essentials, and more — updated based on real customer demand.
+        </p>
+      </div>
+    </div>
+
+      <!-- BLOG 3 -->
+
+          <div class="blog-card">
+      <div class="blog-icon">✔</div>
+      <div class="blog-content">
+        <h3>Smart Shopping Tips to Save More</h3>
+        <p>
+          Discover effective ways to use coupons, offers, cashback, and seasonal deals to get the <br>
+          best price on every purchase.
+        </p>
+      </div>
+    </div>
+  </div>
+<!-- IMAGE BANNER -->
+<div class="blog-banner">
+  <img src="{% static 'image/banner2.png' %}" alt="Blog Banner">
+</div>
+</section>
+
+{% endblock %}
+
+
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <!-- LEFT LOGIN -->
+        <div class="login-box">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+
+            <h2>Register Free !</h2>
+
+            <form method="POST" action="{% url 'eshop:login' %}">
+                {% csrf_token %}
+
+                <input type="email" name="email" placeholder="Enter your e-mail" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <!-- Login Button + Forgot Password -->
+                <div class="login-actions">
+                    <button type="submit">Login</button>
+                    <a href="#" class="forgot-link">Forget your password?</a>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Sign Up Using</span>
+                </div>
+
+                <!-- Social Media Icons -->
+                <div class="social-login">
+                    <a href="#"><i class="fab fa-google"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+
+                <!-- Signup Link -->
+                <p class="signup-text">
+                    Don’t have an account ?
+                    <a href="#" onclick="openSignupModal()">Create New Account</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Login Image">
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ================= SIGNUP MODAL ================= -->
+<div id="signupModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <div class="login-box">
+            <span class="close-btn" onclick="closeSignupModal()">&times;</span>
+
+            <h2>Sign Up</h2>
+
+            <form method="POST" action="{% url 'eshop:signup' %}" onsubmit="return validateSignup()">
+                {% csrf_token %}
+
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+                <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
+
+                <small id="passwordError" style="color:red;"></small>
+
+                <div class="login-actions">
+                    <button type="submit">Sign Up</button>
+                </div>
+
+                <p class="signup-text">
+                    Already have an account ?
+                    <a href="#" onclick="backToLogin()">log in</a>
+                </p>
+            </form>
+        </div>
+
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Signup Image">
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup" class="success-popup">
+    <div class="success-box">
+        <div class="tick-circle">✔</div>
+        <h3>Login Successful</h3>
+    </div>
+</div>
+
+<script>
+function openLoginModal(){
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function closeLoginModal(){
+    document.getElementById("loginModal").style.display="none";
+}
+
+function openSignupModal(){
+    document.getElementById("loginModal").style.display="none";
+    document.getElementById("signupModal").style.display="flex";
+}
+
+function closeSignupModal(){
+    document.getElementById("signupModal").style.display="none";
+}
+
+function backToLogin(){
+    document.getElementById("signupModal").style.display="none";
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function toggleUserPopup(){
+    document.getElementById("userPopup").classList.toggle("show");
+}
+
+window.onclick = function(event){
+    if(!event.target.closest('.user-menu')){
+        let popup=document.getElementById("userPopup");
+        if(popup){
+            popup.classList.remove("show");
+        }
+    }
+}
+</script>
+
+
+
+
+

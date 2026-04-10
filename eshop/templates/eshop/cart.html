@@ -1,0 +1,697 @@
+{% extends "eshop/base.html" %}
+{% load static %}
+
+{% block content %}
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<style>
+  *{box-sizing:border-box;}
+  .cart-page{max-width:1200px;margin:36px auto;padding:0 20px;}
+  .cart-page h2{text-align:center;font-size:28px;font-weight:700;color:#111;margin-bottom:28px;}
+
+  /* ── STEP BAR ── */
+  .step-bar{display:flex;justify-content:center;gap:0;background:#fff;border:1px solid #e0e0e0;border-radius:14px;padding:18px 40px;margin-bottom:36px;max-width:780px;margin-left:auto;margin-right:auto;}
+  .step-item{display:flex;align-items:center;gap:10px;flex:1;justify-content:center;}
+  .step-dot{width:14px;height:14px;border-radius:50%;background:#ccc;flex-shrink:0;transition:background .3s;}
+  .step-item.active .step-dot{background:#00a650;}
+  .step-item.active .step-text{color:#00a650;font-weight:600;}
+  .step-text{font-size:15px;color:#888;transition:color .3s;}
+
+  /* ── PANELS ── */
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* ── CART LAYOUT ── */
+  .cart-layout{display:grid;grid-template-columns:1fr 360px;gap:28px;align-items:start;}
+  .cart-table-wrap{background:#fff;border:1px solid #e8e8e8;border-radius:14px;overflow:hidden;}
+  .cart-header{display:grid;grid-template-columns:140px 1fr 200px 100px 48px;padding:14px 24px;border-bottom:1px solid #eee;gap:12px;}
+  .cart-header span{font-size:14px;font-weight:600;color:#333;}
+  .cart-item-row{display:grid;grid-template-columns:140px 1fr 200px 100px 48px;align-items:center;padding:18px 24px;border-bottom:1px solid #f5f5f5;gap:12px;transition:opacity .3s;}
+  .cart-item-row:last-of-type{border-bottom:none;}
+  .cart-img{width:100px;height:100px;border-radius:50%;object-fit:cover;background:#f5f5f5;border:2px solid #eee;}
+  .cart-name{font-size:14px;font-weight:500;color:#222;line-height:1.5;}
+  .qty-control{display:flex;align-items:center;border:1.5px solid #ccc;border-radius:50px;overflow:hidden;width:fit-content;}
+  .qty-btn{background:none;border:none;width:36px;height:36px;font-size:17px;font-weight:700;cursor:pointer;color:#333;transition:background .15s;}
+  .qty-btn:hover{background:#f0f0f0;}
+  .qty-num{width:36px;text-align:center;font-size:14px;font-weight:700;border-left:1px solid #ccc;border-right:1px solid #ccc;height:36px;line-height:36px;}
+  .cart-price{font-size:15px;font-weight:700;color:#00a650;}
+  .remove-btn{background:none;border:none;color:#ccc;font-size:18px;cursor:pointer;transition:color .2s;padding:4px;}
+  .remove-btn:hover{color:#e53935;}
+
+  /* coupon row */
+  .coupon-row{display:flex;align-items:center;gap:12px;padding:18px 24px;flex-wrap:wrap;}
+  .coupon-input{padding:10px 18px;font-size:14px;border:1.5px solid #ccc;border-radius:50px;outline:none;min-width:160px;transition:border-color .2s;}
+  .coupon-input:focus{border-color:#00a650;}
+  .apply-btn{background:#00a650;color:#fff;border:none;border-radius:50px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;transition:background .2s;}
+  .apply-btn:hover{background:#008c42;}
+  .clear-cart-link{background:none;border:none;color:#00a650;font-size:13px;font-weight:600;cursor:pointer;text-decoration:underline;margin-left:auto;}
+
+  /* summary card */
+  .summary-card{background:#fff;border:1.5px solid #ccc;border-radius:14px;padding:24px;}
+  .summary-card h3{font-size:18px;font-weight:700;color:#111;margin-bottom:14px;padding-bottom:12px;border-bottom:1.5px dashed #ccc;}
+  .sum-row{display:flex;justify-content:space-between;font-size:14px;color:#444;margin-bottom:10px;}
+  .sum-total{display:flex;justify-content:space-between;font-size:16px;font-weight:700;padding-top:12px;border-top:1.5px dashed #ccc;}
+  .sum-total .green{color:#00a650;}
+  .proceed-btn{display:block;width:100%;margin-top:16px;padding:13px;background:#00a650;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;transition:background .2s,transform .1s;}
+  .proceed-btn:hover{background:#008c42;}
+  .proceed-btn:active{transform:scale(.98);}
+
+  /* ── BILLING CARD ── */
+  .checkout-layout{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;}
+  .billing-card{background:#00a650;border-radius:20px;padding:36px 40px;margin-bottom:28px;}
+  .billing-card h3{font-size:22px;font-weight:700;color:#fff;margin-bottom:28px;}
+  .b-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px 22px;}
+  .b-field label{display:block;color:#fff;font-size:13px;font-weight:600;margin-bottom:7px;}
+  .b-field input,.b-field select{width:100%;padding:12px 14px;font-size:14px;border:none;border-radius:10px;background:#fff;color:#333;outline:none;transition:box-shadow .2s;}
+  .b-field input:focus,.b-field select:focus{box-shadow:0 0 0 3px rgba(255,255,255,.5);}
+  .b-err{color:#ffeb3b;font-size:11px;margin-top:4px;display:none;}
+
+  /* ── PAYMENT ── */
+  .payment-layout{display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start;}
+  .pay-product-card{background:#fff;border:1px solid #e0e0e0;border-radius:14px;padding:24px;margin-bottom:24px;}
+  .pay-inner{display:flex;gap:24px;align-items:flex-start;}
+  .pay-img{width:150px;height:150px;border-radius:50%;object-fit:cover;background:#f5f5f5;border:2px solid #eee;flex-shrink:0;}
+  .pi-label{font-size:15px;font-weight:700;color:#111;margin-bottom:5px;}
+  .pi-value{font-size:14px;color:#444;margin-bottom:12px;line-height:1.5;}
+  .pi-price{font-size:18px;font-weight:700;color:#00a650;}
+  .choose-pay h3{text-align:center;font-size:22px;font-weight:700;color:#111;margin:28px 0 24px;}
+  .pay-methods{display:flex;justify-content:center;gap:36px;flex-wrap:wrap;margin-bottom:24px;}
+  .pay-method{display:flex;align-items:center;gap:12px;cursor:pointer;}
+  .pay-method input[type=radio]{width:18px;height:18px;accent-color:#00a650;cursor:pointer;}
+  .pay-circle{width:86px;height:86px;border-radius:50%;border:1.5px solid #ccc;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#fff;transition:border-color .2s,box-shadow .2s;}
+  .pay-method input:checked~.pay-circle{border-color:#00a650;box-shadow:0 0 0 3px rgba(0,166,80,.15);}
+  .pay-circle img{width:64px;height:64px;object-fit:contain;}
+  .gpay-form{display:none;max-width:660px;margin:0 auto 24px;padding:28px 30px;background:#fff;border:1px solid #e0e0e0;border-radius:14px;}
+  .gpay-form.show{display:block;}
+  .gpay-form h4{font-size:20px;font-weight:600;color:#111;margin-bottom:18px;}
+  .gpay-form label{display:block;font-size:14px;font-weight:500;color:#333;margin-bottom:6px;margin-top:14px;}
+  .gpay-form input{width:100%;padding:12px 15px;font-size:14px;border:1.5px solid #ddd;border-radius:10px;outline:none;transition:border-color .2s;}
+  .gpay-form input:focus{border-color:#00a650;}
+  .gpay-pay-with{display:flex;align-items:center;justify-content:space-between;border:1.5px solid #ddd;border-radius:10px;padding:11px 15px;margin-top:8px;}
+  .submit-btn{display:block;margin:28px auto 0;padding:13px 56px;background:#00a650;color:#fff;border:none;border-radius:50px;font-size:16px;font-weight:700;cursor:pointer;transition:background .2s,transform .1s;}
+  .submit-btn:hover{background:#008c42;}
+  .submit-btn:active{transform:scale(.98);}
+
+  /* empty */
+  .empty-cart{text-align:center;padding:60px 20px;color:#aaa;font-size:15px;}
+  .empty-cart i{font-size:48px;color:#ccc;display:block;margin-bottom:14px;}
+
+  /* toast */
+  .toast{position:fixed;bottom:28px;right:28px;background:#222;color:#fff;padding:12px 22px;border-radius:10px;font-size:14px;font-weight:500;opacity:0;transform:translateY(8px);transition:opacity .3s,transform .3s;z-index:9999;pointer-events:none;}
+  .toast.show{opacity:1;transform:translateY(0);}
+
+  /* responsive */
+  @media(max-width:900px){
+    .cart-layout,.checkout-layout,.payment-layout{grid-template-columns:1fr;}
+    .b-grid{grid-template-columns:1fr 1fr;}
+    .cart-header{display:none;}
+    .cart-item-row{grid-template-columns:80px 1fr 40px;grid-template-rows:auto auto auto;gap:8px 12px;}
+    .cart-img{width:72px;height:72px;}
+    .cart-price,.qty-control{grid-column:1/3;}
+    .remove-btn{grid-column:3;grid-row:1;align-self:start;}
+  }
+  @media(max-width:560px){
+    .b-grid{grid-template-columns:1fr;}
+    .step-text{font-size:12px;}
+    .billing-card{padding:20px 14px;}
+    .pay-methods{gap:20px;}
+  }
+
+  /* SUCCESS MODAL */
+.success-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.success-modal.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.success-box {
+  background: #fff;
+  padding: 40px 30px;
+  border-radius: 20px;
+  text-align: center;
+  width: 320px;
+  animation: popIn 0.4s ease;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.7); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.success-box h2 {
+  margin-top: 15px;
+  font-size: 22px;
+  color: #00a650;
+}
+
+.success-box p {
+  font-size: 14px;
+  color: #555;
+  margin: 10px 0 20px;
+}
+
+.success-box button {
+  background: #00a650;
+  color: #fff;
+  border: none;
+  padding: 12px 30px;
+  border-radius: 50px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.success-box button:hover {
+  background: #008c42;
+}
+
+/* CHECKMARK ANIMATION */
+.checkmark-circle {
+  width: 80px;
+  height: 80px;
+  background: #00a650;
+  border-radius: 50%;
+  margin: 0 auto;
+  position: relative;
+}
+
+.checkmark {
+  position: absolute;
+  left: 22px;
+  top: 40px;
+  width: 25px;
+  height: 12px;
+  border-left: 4px solid white;
+  border-bottom: 4px solid white;
+  transform: rotate(-45deg);
+}
+.order-info {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 15px;
+  margin: 15px 0;
+  text-align: left;
+}
+
+.order-info h3 {
+  font-size: 16px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.order-info p {
+  font-size: 13px;
+  margin: 6px 0;
+  color: #444;
+}
+
+.order-info strong {
+  color: #111;
+}
+</style>
+
+<div class="cart-page">
+  <h2 id="pageTitle">Card section list</h2>
+
+  <!-- STEP BAR -->
+  <div class="step-bar">
+    <div class="step-item active" id="step1"><div class="step-dot"></div><span class="step-text">Product card</span></div>
+    <div class="step-item"        id="step2"><div class="step-dot"></div><span class="step-text">Check out page</span></div>
+    <div class="step-item"        id="step3"><div class="step-dot"></div><span class="step-text">Payment page</span></div>
+  </div>
+
+  <!-- ══ TAB 1 — CART ══ -->
+  <div class="tab-panel active" id="panel-cart">
+    {% if cart_items %}
+    <div class="cart-layout">
+      <div>
+        <div class="cart-table-wrap">
+          <div class="cart-header">
+            <span>Product</span><span>Names</span><span>Quantity</span><span>Price</span><span></span>
+          </div>
+
+          {% for item in cart_items %}
+          <div class="cart-item-row" id="row-{{ item.id }}">
+            {% if item.product.image %}
+              <img class="cart-img" src="{{ item.product.image.url }}" alt="{{ item.product.name }}" />
+            {% else %}
+              <img class="cart-img" src="https://via.placeholder.com/100?text=Item" alt="{{ item.product.name }}" />
+            {% endif %}
+
+            <div class="cart-name">{{ item.product.name }}</div>
+
+            <div class="qty-control">
+              <button class="qty-btn" onclick="changeQty({{ item.id }}, -1)">−</button>
+              <div class="qty-num" id="qty-{{ item.id }}">{{ item.quantity }}</div>
+              <button class="qty-btn" onclick="changeQty({{ item.id }}, 1)">+</button>
+            </div>
+
+            <div class="cart-price" id="price-{{ item.id }}">${{ item.get_subtotal }}</div>
+
+            <button class="remove-btn" onclick="removeItem({{ item.id }})" title="Remove">✕</button>
+          </div>
+          {% endfor %}
+
+          <div class="coupon-row">
+            <input type="text" class="coupon-input" id="couponInput"
+                   placeholder="Coupencode" value="{{ coupon_code }}" />
+            <button class="apply-btn" onclick="applyCoupon()">Apply coupen</button>
+            <button class="clear-cart-link" onclick="clearCart()">Clear Shopping cart</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="summary-card">
+        <h3>Order Summary</h3>
+        <div class="sum-row"><span>Items</span><span id="s-count">{{ cart_items|length }}</span></div>
+        <div class="sum-row"><span>Subtotal</span><span id="s-subtotal">${{ subtotal }}</span></div>
+        <div class="sum-row"><span>Shipping</span><span id="s-ship">${{ shipping }}</span></div>
+        <div class="sum-row"><span>Taxes</span><span id="s-tax">${{ taxes }}</span></div>
+        <div class="sum-row"><span>Coupen Discount</span><span id="s-discount">-${{ discount }}</span></div>
+        <div class="sum-total"><span>Total</span><span class="green" id="s-total">${{ total }}</span></div>
+        <button class="proceed-btn" onclick="goStep(2)">Proceed to Checkout</button>
+      </div>
+    </div>
+
+    {% else %}
+    <div class="empty-cart">
+      <i class="fa fa-shopping-cart"></i>
+      Your cart is empty. <a href="{% url 'eshop:categories' %}">Shop now</a>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ══ TAB 2 — CHECKOUT ══ -->
+  <div class="tab-panel" id="panel-checkout">
+    <div class="checkout-layout">
+      <div class="billing-card">
+        <h3>Billing Details</h3>
+        <div class="b-grid">
+          <div class="b-field"><label>First Name*</label>
+            <input type="text" id="b-first_name" placeholder="Ex.john"
+                   value="{{ request.user.first_name }}" />
+            <div class="b-err" id="err-first_name"></div></div>
+
+          <div class="b-field"><label>Last Name*</label>
+            <input type="text" id="b-last_name" placeholder="Ex.Doe"
+                   value="{{ request.user.last_name }}" />
+            <div class="b-err" id="err-last_name"></div></div>
+
+          <div class="b-field"><label>Country*</label>
+            <select id="b-country">
+              <option value="">Select Country</option>
+              <option>India</option><option>United States</option>
+              <option>United Kingdom</option><option>Australia</option><option>Canada</option>
+            </select>
+            <div class="b-err" id="err-country"></div></div>
+
+          <div class="b-field"><label>Phone*</label>
+            <input type="tel" id="b-phone" placeholder="Enter Phone Number"
+                   value="{% if request.user.profile %}{{ request.user.profile.phone }}{% endif %}" />
+            <div class="b-err" id="err-phone"></div></div>
+
+          <div class="b-field"><label>E-Mail*</label>
+            <input type="email" id="b-email" placeholder="Enter E-Mail Id"
+                   value="{{ request.user.email }}" />
+            <div class="b-err" id="err-email"></div></div>
+
+          <div class="b-field"><label>Street Address*</label>
+            <input type="text" id="b-street" placeholder="Enter Street Address" />
+            <div class="b-err" id="err-street"></div></div>
+
+          <div class="b-field"><label>Select State</label>
+            <input type="text" id="b-state" placeholder="Select state" /></div>
+
+          <div class="b-field"><label>Zip Code</label>
+            <input type="text" id="b-zip" placeholder="Select Zipcode" /></div>
+
+          <div class="b-field"><label>Delivery Address*</label>
+            <input type="text" id="b-delivery" placeholder="Enter Delivery Address" />
+            <div class="b-err" id="err-delivery"></div></div>
+        </div>
+      </div>
+
+      <!-- Checkout summary -->
+      <div class="summary-card">
+        <h3>Order Summary</h3>
+        <div class="sum-row"><span>Items</span><span>{{ cart_items|length }}</span></div>
+        <div class="sum-row"><span>Subtotal</span><span>${{ subtotal }}</span></div>
+        <div class="sum-row"><span>Shipping</span><span>Rs.{{ shipping }}</span></div>
+        <div class="sum-row"><span>Taxes</span><span>Rs.{{ taxes }}</span></div>
+        <div class="sum-total"><span>Total</span><span>${{ total }}</span></div>
+        <button class="proceed-btn" onclick="submitCheckout()">Proceed to Payment</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ TAB 3 — PAYMENT ══ -->
+  <div class="tab-panel" id="panel-payment">
+  <div class="payment-layout">
+
+    <!-- LEFT SIDE -->
+    <div>
+
+      <!-- Product preview -->
+      <div class="pay-product-card" id="payProductCard">
+        {% for item in cart_items %}
+        <div class="pay-inner">
+          {% if item.product.image %}
+            <img class="pay-img" src="{{ item.product.image.url }}" />
+          {% else %}
+            <img class="pay-img" src="https://via.placeholder.com/150?text=Item" />
+          {% endif %}
+          <div>
+            <div class="pi-label">Product</div>
+            <div class="pi-value">{{ item.product.name }}</div>
+
+            <div class="pi-label">Date</div>
+            <div class="pi-value">{% now "d F Y" %}</div>
+
+            <div class="pi-label">Price</div>
+            <div class="pi-price">₹{{ item.product.price }}</div>
+          </div>
+        </div>
+        {% if not forloop.last %}
+          <hr style="margin:16px 0;border-color:#eee;">
+        {% endif %}
+        {% endfor %}
+      </div>
+
+      <!-- ✅ Razorpay Payment UI -->
+      <div class="choose-pay">
+        <h3 style="text-align:center;">Pay Securely via Razorpay</h3>
+
+        <button class="submit-btn" onclick="submitPayment()">
+          Pay Now
+        </button>
+      </div>
+
+    </div>
+
+    <!-- RIGHT SIDE SUMMARY -->
+    <div class="summary-card">
+      <h3>Order Summary</h3>
+      <div class="sum-row"><span>Items</span><span>{{ cart_items|length }}</span></div>
+      <div class="sum-row"><span>Subtotal</span><span>₹{{ subtotal }}</span></div>
+      <div class="sum-row"><span>Shipping</span><span>₹{{ shipping }}</span></div>
+      <div class="sum-row"><span>Taxes</span><span>₹{{ taxes }}</span></div>
+      <div class="sum-row"><span>Coupon Discount</span><span>-₹{{ discount }}</span></div>
+      <div class="sum-total">
+        <span>Total</span>
+        <span class="green">₹{{ total }}</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<script>
+const CSRF = '{{ csrf_token }}';
+
+/* ───────── TOAST ───────── */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+/* ───────── STEP NAVIGATION ───────── */
+const TITLES = {1:'Card section list', 2:'Check out page', 3:'Payment Section'};
+
+function goStep(n) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.step-item').forEach((s,i) => {
+    s.classList.toggle('active', i < n);
+  });
+  const panels = ['cart','checkout','payment'];
+  document.getElementById('panel-' + panels[n-1]).classList.add('active');
+  document.getElementById('pageTitle').textContent = TITLES[n];
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+/* ───────── CART FUNCTIONS ───────── */
+function changeQty(itemId, delta) {
+  const qtyEl  = document.getElementById('qty-' + itemId);
+  const newQty = Math.max(1, parseInt(qtyEl.textContent) + delta);
+  qtyEl.textContent = newQty;
+
+  fetch("{% url 'eshop:cart_update' %}", {
+    method: 'POST',
+    headers: {'X-CSRFToken': CSRF, 'Content-Type': 'application/json'},
+    body: JSON.stringify({item_id: itemId, quantity: newQty}),
+  })
+  .then(r => r.json())
+  .then(d => {
+    document.getElementById('price-' + itemId).textContent = '₹' + d.item_subtotal;
+    document.getElementById('s-subtotal').textContent = '₹' + d.subtotal;
+    document.getElementById('s-tax').textContent = '₹' + d.taxes;
+    document.getElementById('s-total').textContent = '₹' + d.total;
+    document.getElementById('s-count').textContent = d.item_count;
+  })
+  .catch(() => toast('Update failed'));
+}
+
+function removeItem(itemId) {
+  const row = document.getElementById('row-' + itemId);
+  row.style.opacity = '0';
+
+  fetch("{% url 'eshop:cart_remove' item_id=0 %}".replace('0', itemId), {
+    method: 'POST',
+    headers: {'X-CSRFToken': CSRF},
+  })
+  .then(r => r.json())
+  .then(d => {
+    setTimeout(() => {
+      row.remove();
+      document.getElementById('s-subtotal').textContent = '₹' + d.subtotal;
+      document.getElementById('s-tax').textContent = '₹' + d.taxes;
+      document.getElementById('s-total').textContent = '₹' + d.total;
+      document.getElementById('s-count').textContent = d.item_count;
+      if (d.item_count === 0) location.reload();
+    }, 300);
+    toast('Item removed');
+  });
+}
+
+function clearCart() {
+  if (!confirm('Clear your entire cart?')) return;
+
+  fetch("{% url 'eshop:cart_clear' %}", {
+    method: 'POST',
+    headers: {'X-CSRFToken': CSRF},
+  })
+  .then(() => {
+    toast('Cart cleared');
+    setTimeout(() => location.reload(), 800);
+  });
+}
+
+/* ───────── COUPON ───────── */
+function applyCoupon() {
+  const code = document.getElementById('couponInput').value.trim();
+  if (!code) { toast('Enter a coupon code first.'); return; }
+
+  fetch("{% url 'eshop:cart_coupon' %}", {
+    method: 'POST',
+    headers: {'X-CSRFToken': CSRF, 'Content-Type': 'application/json'},
+    body: JSON.stringify({code}),
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) {
+      document.getElementById('s-discount').textContent = '-₹' + d.discount;
+      document.getElementById('s-tax').textContent = '₹' + d.taxes;
+      document.getElementById('s-total').textContent = '₹' + d.new_total;
+      toast(d.message);
+    } else {
+      toast(d.message || 'Invalid coupon.');
+    }
+  });
+}
+
+/* ───────── CHECKOUT ───────── */
+function submitCheckout() {
+  const fields = ['first_name','last_name','country','phone','email','street','delivery'];
+  let valid = true;
+  const data = {};
+
+  fields.forEach(f => {
+    const el = document.getElementById('b-' + f);
+    data[f] = el ? el.value.trim() : '';
+    if (!data[f]) valid = false;
+  });
+
+  if (!valid) {
+    toast('Please fill all required fields.');
+    return;
+  }
+
+  fetch("{% url 'eshop:checkout_submit' %}", {
+    method: 'POST',
+    headers: {'X-CSRFToken': CSRF, 'Content-Type': 'application/json'},
+    body: JSON.stringify(data),
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.success) goStep(3);
+    else toast('Checkout error');
+  });
+}
+
+/* ───────── RAZORPAY PAYMENT ───────── */
+function submitPayment() {
+  console.log("Pay clicked");
+
+  fetch("{% url 'eshop:create_razorpay_order' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": CSRF,
+      "Content-Type": "application/json"
+    },
+    credentials: "same-origin"
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("Order:", data);
+
+    if (!data.success) {
+      alert("Payment init failed");
+      return;
+    }
+
+    const options = {
+      key: data.key,
+      amount: data.amount,
+      currency: "INR",
+      name: "My Shop",
+      description: "Order Payment",
+      order_id: data.order_id,
+
+      handler: function (response) {
+        console.log("Payment success:", response);
+        verifyPayment(response);
+      },
+
+      theme: {
+        color: "#00a650"
+      }
+    };
+
+    const rzp = new Razorpay(options);
+    rzp.open();
+  })
+  .catch(err => {
+    console.error(err);
+    alert("Something broke");
+  });
+}
+
+/* ───────── VERIFY PAYMENT ───────── */
+function verifyPayment(response) {
+  console.log("🔵 Razorpay Response:", response);
+
+  fetch("{% url 'eshop:verify_razorpay_payment' %}", {
+    method: "POST",
+    headers: {
+      "X-CSRFToken": CSRF,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      razorpay_order_id: response.razorpay_order_id,
+      razorpay_payment_id: response.razorpay_payment_id,
+      razorpay_signature: response.razorpay_signature
+    })
+  })
+  .then(res => res.json())
+  .then(data => {
+    console.log("🟢 Verify API Response:", data);
+
+    if (data.success && data.order) {
+      // ✅ SHOW SUCCESS MODAL WITH DATA
+      showSuccessModal(data.order);
+    } else {
+      alert(data.error || "Payment verification failed");
+    }
+  })
+  .catch(err => {
+    console.error("🔴 Verification Error:", err);
+    alert("Something went wrong during verification");
+  });
+}
+
+/* ───────── SUCCESS MODAL ───────── */
+function showSuccessModal() {
+  document.getElementById("successModal").classList.add("show");
+}
+
+function goToOrders() {
+  window.location.href = "{% url 'eshop:profile' %}?tab=orders";
+}
+</script>
+
+
+
+<div id="successModal" class="success-modal">
+  <div class="success-box">
+
+    <div class="checkmark-circle">
+      <div class="checkmark"></div>
+    </div>
+
+    <h2>Payment Successful!</h2>
+    <p>Your order has been placed successfully.</p>
+
+    <!-- ✅ ORDER DETAILS -->
+    <div class="order-info">
+      <h3>🧾 Order Summary</h3>
+      <p><strong>Order ID:</strong> <span id="order_id"></span></p>
+      <p><strong>Payment ID:</strong> <span id="payment_id"></span></p>
+      <p><strong>Total Amount:</strong> ₹<span id="order_amount"></span></p>
+      <p><strong>Date:</strong> <span id="order_date"></span></p>
+    </div>
+
+    <button onclick="goToOrders()">View Orders</button>
+  </div>
+</div>
+
+<script>
+function showSuccessModal(order) {
+  document.getElementById("successModal").classList.add("show");
+
+  document.getElementById("order_id").textContent =
+    order?.order_id || "N/A";
+
+  document.getElementById("payment_id").textContent =
+    order?.payment_id || "N/A";
+
+  document.getElementById("order_amount").textContent =
+    order?.amount || "0";
+
+  document.getElementById("order_date").textContent =
+    order?.date || "N/A";
+}
+function goToOrders() {
+  window.location.href = "{% url 'eshop:profile' %}?tab=orders";
+}
+</script>
+{% endblock %}

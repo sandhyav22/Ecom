@@ -1,0 +1,574 @@
+{% extends "eshop/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+.about-section {
+  padding: 20px;
+}
+
+.about-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.about-header h1 {
+  font-size: 32px;
+  font-weight: 700;
+}
+
+.about-header p {
+  max-width: 900px;
+  margin-left:15%;
+  color: black;
+  font-size: 22px;
+   text-align: left;
+}
+
+/* EXISTING STYLES KEEP SAME */
+.about-container {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.about-image img {
+  width: 500px;
+  max-width: 100%;
+  height: 500px;
+}
+
+.about-form-box {
+  background: white;
+  padding: 30px;
+   gap: 40px;
+  width: 500px;
+  max-width: 100%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.about-form-box label {
+  color:black;
+  margin-bottom: 5px;
+  font-size: 18px;
+ 
+}
+
+.about-form-box input,
+.about-form-box textarea {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 6px;
+  background: white;
+  outline: none;
+  font-size: 14px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+.about-form-box input::placeholder,
+.about-form-box textarea::placeholder {
+  color: gray;
+  opacity: 0.6;
+}
+
+.form-row {
+  display: flex;
+  gap: 25px;
+  padding: 10px;
+}
+
+.error {
+  color: red;
+  font-size: 12px;
+}
+
+.btn-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-row button {
+  background: linear-gradient(#4CAF50 , #C3E01F);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.about-card {
+  background: white;
+  padding: 25px 35px;
+  max-width: 1000px;
+  margin: 0 auto 30px auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+ text-align: left; /* ✅ left aligned */
+}
+
+.about-card h2 {
+  margin-bottom: 10px;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.about-card p {
+  color: black;
+  font-size: 22px;
+  line-height: 1.6;
+}
+.success-msg {
+  background: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border-radius: 6px;
+  margin-top: 15px;
+  font-weight: 500;
+}
+/* Hamburger hidden desktop */
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Mobile menu hidden initially */
+.mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: white;
+    width: 100%;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.mobile-menu a {
+    padding: 12px;
+    text-decoration: none;
+    color: black;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+
+    .desktop-menu {
+        display: none !important;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .search-box {
+        width: 50%;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+    }
+
+    .mobile-menu.show {
+        display: flex;
+    }
+}
+/* LOGIN CONTAINER */
+.login-container {
+    display: flex;
+    width: 850px;
+    max-width: 95%;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0px 10px 35px rgba(0,0,0,0.2);
+}
+
+/* LOGIN BOX */
+.login-box {
+    width: 50%;
+    padding: 40px;
+    position: relative;
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+/* INPUTS */
+.login-box input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 18px;
+    border: 2px solid #00b33c;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+/* ACTIONS */
+.login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.login-actions button {
+    background: #00c83c;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.forgot-link {
+    font-size: 14px;
+    color: #444;
+    text-decoration: none;
+}
+
+/* DIVIDER */
+.divider {
+    text-align: center;
+    margin: 25px 0;
+    position: relative;
+}
+
+.divider span {
+    background: white;
+    padding: 0 15px;
+    font-weight: bold;
+    color: #555;
+}
+
+.divider::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: #ccc;
+    top: 50%;
+    left: 0;
+    z-index: -1;
+}
+
+/* SOCIAL LOGIN */
+.social-login {
+    display: flex;
+    justify-content: space-around;
+    border: 1px solid #ddd;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.social-login a {
+    color: #333;
+    font-size: 20px;
+    transition: 0.3s;
+}
+
+.social-login a:hover {
+    transform: scale(1.2);
+    color: green;
+}
+
+/* SIGNUP TEXT */
+.signup-text {
+    text-align: center;
+    font-size: 15px;
+}
+
+.signup-text a {
+    color: green;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* RIGHT IMAGE */
+.login-image {
+    width: 50%;
+    background: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-image img {
+    width: 70%;
+    max-height: 350px;
+    object-fit: contain;
+}
+</style>
+
+<section class="about-section">
+
+  <!-- ✅ HEADING + PARAGRAPH -->
+  <div class="about-header">
+    <h1>About Us</h1><br><br><br>
+    <p>
+      [Ecom seller] brings you genuine products at great prices with fast, reliable deliver. Quality-<br>
+      checked items, secure payments and frindly support -- shopping made simple.
+    </p>
+  </div>
+
+{% if success %}
+  <p id="successMsg" class="success-msg">Message sent successfully ✅</p>
+{% endif %}
+  <div class="about-container">
+
+    <!-- LEFT IMAGE -->
+    <div class="about-image">
+      <img src="{% static 'image/about.png' %}" alt="about">
+    </div>
+
+    <!-- RIGHT FORM -->
+    <div class="about-form-box">
+
+      {% if success %}
+        <p class="success-msg">Message sent successfully ✅</p>
+      {% endif %}
+
+      <form method="POST" id="aboutForm">
+        {% csrf_token %}
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Name</label><br><br>
+            <input type="text" id="name" name="first_name" placeholder="Ex. John">
+            <small class="error"></small>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Email</label><br><br>
+            <input type="email" id="email" name="email" placeholder="Enter E-Mail Id">
+            <small class="error"></small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Message</label><br><br>
+          <textarea rows="4" id="message" name="message" placeholder="Enter here"></textarea>
+          <small class="error"></small>
+        </div>
+        <br><br>
+        <div class="btn-row">
+          <button type="submit">SEND</button>
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+  <br>
+  <div class="about-card">
+  <h2>Our Mission</h2><br><br>
+  <p>
+    To simplify shopping by offering a curated selection of high-quality products, timely<br>
+    delivery, and clear policies so customers can buy with confidence.
+  </p><br><br>
+  <h2>Our Vision</h2><br><br>
+  <p>
+    To become a customer-first online marketplace where trust, transparency and <br>
+    quality come together.
+  </p>
+</div>
+
+</section>
+
+<script>
+const form = document.getElementById("aboutForm");
+
+form.addEventListener("submit", function(e) {
+  let valid = true;
+
+  const name = document.getElementById("name");
+  const email = document.getElementById("email");
+  const message = document.getElementById("message");
+
+  // Name validation
+  if (name.value.trim() === "") {
+    name.nextElementSibling.textContent = "Name is required";
+    valid = false;
+  } else {
+    name.nextElementSibling.textContent = "";
+  }
+
+  // Email validation
+  if (!/^\S+@\S+\.\S+$/.test(email.value)) {
+    email.nextElementSibling.textContent = "Enter valid email";
+    valid = false;
+  } else {
+    email.nextElementSibling.textContent = "";
+  }
+
+  // Message validation
+  if (message.value.trim() === "") {
+    message.nextElementSibling.textContent = "Message is required";
+    valid = false;
+  } else {
+    message.nextElementSibling.textContent = "";
+  }
+
+  if (!valid) e.preventDefault();
+});
+</script>
+
+{% endblock %}
+
+
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <!-- LEFT LOGIN -->
+        <div class="login-box">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+
+            <h2>Register Free !</h2>
+
+            <form method="POST" action="{% url 'eshop:login' %}">
+                {% csrf_token %}
+
+                <input type="email" name="email" placeholder="Enter your e-mail" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <!-- Login Button + Forgot Password -->
+                <div class="login-actions">
+                    <button type="submit">Login</button>
+                    <a href="#" class="forgot-link">Forget your password?</a>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Sign Up Using</span>
+                </div>
+
+                <!-- Social Media Icons -->
+                <div class="social-login">
+                    <a href="#"><i class="fab fa-google"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+
+                <!-- Signup Link -->
+                <p class="signup-text">
+                    Don’t have an account ?
+                    <a href="#" onclick="openSignupModal()">Create New Account</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Login Image">
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ================= SIGNUP MODAL ================= -->
+<div id="signupModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <div class="login-box">
+            <span class="close-btn" onclick="closeSignupModal()">&times;</span>
+
+            <h2>Sign Up</h2>
+
+            <form method="POST" action="{% url 'eshop:signup' %}" onsubmit="return validateSignup()">
+                {% csrf_token %}
+
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+                <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
+
+                <small id="passwordError" style="color:red;"></small>
+
+                <div class="login-actions">
+                    <button type="submit">Sign Up</button>
+                </div>
+
+                <p class="signup-text">
+                    Already have an account ?
+                    <a href="#" onclick="backToLogin()">log in</a>
+                </p>
+            </form>
+        </div>
+
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Signup Image">
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup" class="success-popup">
+    <div class="success-box">
+        <div class="tick-circle">✔</div>
+        <h3>Login Successful</h3>
+    </div>
+</div>
+
+<script>
+function openLoginModal(){
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function closeLoginModal(){
+    document.getElementById("loginModal").style.display="none";
+}
+
+function openSignupModal(){
+    document.getElementById("loginModal").style.display="none";
+    document.getElementById("signupModal").style.display="flex";
+}
+
+function closeSignupModal(){
+    document.getElementById("signupModal").style.display="none";
+}
+
+function backToLogin(){
+    document.getElementById("signupModal").style.display="none";
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function toggleUserPopup(){
+    document.getElementById("userPopup").classList.toggle("show");
+}
+
+window.onclick = function(event){
+    if(!event.target.closest('.user-menu')){
+        let popup=document.getElementById("userPopup");
+        if(popup){
+            popup.classList.remove("show");
+        }
+    }
+}
+</script>
+
+
+

@@ -1,0 +1,558 @@
+{% extends "eshop/base.html" %}
+{% load static %}
+
+{% block content %}
+<style>
+/* ===== CONTACT SECTION ===== */
+.contact-section {
+  padding: 50px 20px;
+}
+
+/* HEADING */
+.contact-section h1 {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 40px;
+  font-weight: 700;
+}
+
+/* FLEX CONTAINER */
+.contact-flex {
+  display: flex;
+  align-items: center; /* vertically center the paragraph */
+  gap: 50px;
+  justify-content: left;
+  flex-wrap: wrap;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  margin-left: 5%;
+}
+
+/* IMAGE */
+.contact-flex .contact-image img {
+  width: 200px;
+  max-width: 100%;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+/* PARAGRAPH */
+.contact-flex .contact-text {
+  max-width: 1000px;
+  text-align: left;
+  font-size: 20px;
+  line-height: 1.6;
+  color: black;
+  display: flex;
+  align-items: center; /* vertically center */
+  height: 100%; 
+  font-weight: bold;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .contact-flex {
+    flex-direction: column;
+  }
+
+  .contact-flex .contact-text {
+    text-align: center;
+  }
+}
+
+/* SECTION */
+.contact-section {
+  padding: 50px;
+}
+
+/* MAIN FLEX */
+.contact-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+ 
+}
+
+/* LEFT SIDE */
+.contact-left {
+  width: 50%;
+  background: white ;
+  padding: 10px 20px;
+  height: 700px;
+
+}
+
+/* CARD STYLE */
+.contact-card {
+  background: linear-gradient( #4CAF50, #C3E01F);
+  color: white;
+  padding: 25px;
+  border-bottom-right-radius: 35px;
+  margin-bottom: 25px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+}
+
+/* CARD TEXT */
+.contact-card h3 {
+  margin-bottom: 10px;
+  font-size: 26px;
+}
+
+.contact-card p {
+  margin: 5px 0;
+  font-size: 22px;
+}
+
+/* FOLLOW SECTION */
+.follow {
+  margin-top: 30px;
+}
+
+.follow h4 {
+  margin-bottom: 15px;
+  font-size: 26px;
+}
+
+/* SOCIAL ICONS */
+.social-icons {
+  display: flex;
+  gap: 70px;
+  padding: 30px;
+}
+
+.social-icons img {
+  width: 60px;
+  transition: 0.3s;
+}
+
+.social-icons img:hover {
+  transform: scale(1.2);
+}
+
+/* RIGHT IMAGE */
+.contact-right {
+  width: 50%;
+  text-align: center;
+}
+
+.contact-right img {
+  width: 100%;
+  max-width: 500px;
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .contact-container {
+    flex-direction: column;
+  }
+
+  .contact-left,
+  .contact-right {
+    width: 100%;
+  }
+
+  .contact-right {
+    margin-top: 30px;
+  }
+}
+/* Hamburger hidden desktop */
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Mobile menu hidden initially */
+.mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: white;
+    width: 100%;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.mobile-menu a {
+    padding: 12px;
+    text-decoration: none;
+    color: black;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+
+    .desktop-menu {
+        display: none !important;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .search-box {
+        width: 50%;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+    }
+
+    .mobile-menu.show {
+        display: flex;
+    }
+}
+/* LOGIN CONTAINER */
+.login-container {
+    display: flex;
+    width: 850px;
+    max-width: 95%;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0px 10px 35px rgba(0,0,0,0.2);
+}
+
+/* LOGIN BOX */
+.login-box {
+    width: 50%;
+    padding: 40px;
+    position: relative;
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+/* INPUTS */
+.login-box input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 18px;
+    border: 2px solid #00b33c;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+/* ACTIONS */
+.login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.login-actions button {
+    background: #00c83c;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.forgot-link {
+    font-size: 14px;
+    color: #444;
+    text-decoration: none;
+}
+
+/* DIVIDER */
+.divider {
+    text-align: center;
+    margin: 25px 0;
+    position: relative;
+}
+
+.divider span {
+    background: white;
+    padding: 0 15px;
+    font-weight: bold;
+    color: #555;
+}
+
+.divider::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: #ccc;
+    top: 50%;
+    left: 0;
+    z-index: -1;
+}
+
+/* SOCIAL LOGIN */
+.social-login {
+    display: flex;
+    justify-content: space-around;
+    border: 1px solid #ddd;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.social-login a {
+    color: #333;
+    font-size: 20px;
+    transition: 0.3s;
+}
+
+.social-login a:hover {
+    transform: scale(1.2);
+    color: green;
+}
+
+/* SIGNUP TEXT */
+.signup-text {
+    text-align: center;
+    font-size: 15px;
+}
+
+.signup-text a {
+    color: green;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* RIGHT IMAGE */
+.login-image {
+    width: 50%;
+    background: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-image img {
+    width: 70%;
+    max-height: 350px;
+    object-fit: contain;
+}
+
+</style>
+
+<section class="contact-section">
+
+  <!-- HEADING -->
+  <h1>Contact Us</h1>
+
+  <!-- FLEX -->
+  <div class="contact-flex">
+
+    <!-- LEFT IMAGE -->
+    <div class="contact-image">
+      <img src="{% static 'image/contact.png' %}" alt="Contact Us">
+    </div>
+
+    <!-- RIGHT PARAGRAPH -->
+    <div class="contact-text">
+      <p>
+Have questions about Delivery? Need support or want to partner with us? Our<br>
+team is ready to assist you anytime.
+      </p>
+    </div>
+
+  </div><br><br>
+  <p style="margin-left: 5%;    font-size: 22px;
+    font-weight: 400;
+    " >
+    Need support with our order, delivery, or account? Our team is always ready to assist you. Whether it's a <br>
+    question, feedback, or a concern, reach out anytime - we ensure a quick a quick and helpful response.
+  </p>
+
+</section>
+  <div class="contact-container">
+
+    <!-- LEFT SIDE -->
+    <div class="contact-left">
+
+      <!-- PHONE SUPPORT -->
+      <div class="contact-card">
+        <h3>Phone Support: <i class="fa-solid fa-phone"></i></h3>
+        <p>+91 98765 43210 (Mon–Sat, 9 AM – 7 PM IST)</p>
+        
+      </div>
+      <br><br>
+
+      <!-- EMAIL SUPPORT -->
+      <div class="contact-card">
+        <h3>Email Support: <i class="fa-regular fa-envelope"></i></h3>
+        <p>support@ecom.com (For product queries & help)</p>
+        <p>business@ecom.com (For partnerships & collaborations)</p>
+      </div>
+      <br><br>
+
+      <!-- FOLLOW -->
+      <div class="follow">
+        <h4>Follow on :</h4>
+        <div class="social-icons">
+          <a href="#"><img src="{% static 'image/fb.png' %}"></a>
+          <a href="#"><img src="{% static 'image/insta.avif' %}"></a>
+          <a href="#"><img src="{% static 'image/twitter.avif' %}"></a>
+          <a href="#"><img src="{% static 'image/youtube.avif' %}"></a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT SIDE IMAGE -->
+    <div class="contact-right">
+      <img src="{% static 'image/map.png' %}" alt="Map Location">
+    </div>
+
+  </div>
+
+
+
+</section>
+
+{% endblock %}
+
+
+
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <!-- LEFT LOGIN -->
+        <div class="login-box">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+
+            <h2>Register Free !</h2>
+
+            <form method="POST" action="{% url 'eshop:login' %}">
+                {% csrf_token %}
+
+                <input type="email" name="email" placeholder="Enter your e-mail" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <!-- Login Button + Forgot Password -->
+                <div class="login-actions">
+                    <button type="submit">Login</button>
+                    <a href="#" class="forgot-link">Forget your password?</a>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Sign Up Using</span>
+                </div>
+
+                <!-- Social Media Icons -->
+                <div class="social-login">
+                    <a href="#"><i class="fab fa-google"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+
+                <!-- Signup Link -->
+                <p class="signup-text">
+                    Don’t have an account ?
+                    <a href="#" onclick="openSignupModal()">Create New Account</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Login Image">
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ================= SIGNUP MODAL ================= -->
+<div id="signupModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <div class="login-box">
+            <span class="close-btn" onclick="closeSignupModal()">&times;</span>
+
+            <h2>Sign Up</h2>
+
+            <form method="POST" action="{% url 'eshop:signup' %}" onsubmit="return validateSignup()">
+                {% csrf_token %}
+
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+                <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
+
+                <small id="passwordError" style="color:red;"></small>
+
+                <div class="login-actions">
+                    <button type="submit">Sign Up</button>
+                </div>
+
+                <p class="signup-text">
+                    Already have an account ?
+                    <a href="#" onclick="backToLogin()">log in</a>
+                </p>
+            </form>
+        </div>
+
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Signup Image">
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup" class="success-popup">
+    <div class="success-box">
+        <div class="tick-circle">✔</div>
+        <h3>Login Successful</h3>
+    </div>
+</div>
+
+<script>
+function openLoginModal(){
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function closeLoginModal(){
+    document.getElementById("loginModal").style.display="none";
+}
+
+function openSignupModal(){
+    document.getElementById("loginModal").style.display="none";
+    document.getElementById("signupModal").style.display="flex";
+}
+
+function closeSignupModal(){
+    document.getElementById("signupModal").style.display="none";
+}
+
+function backToLogin(){
+    document.getElementById("signupModal").style.display="none";
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function toggleUserPopup(){
+    document.getElementById("userPopup").classList.toggle("show");
+}
+
+window.onclick = function(event){
+    if(!event.target.closest('.user-menu')){
+        let popup=document.getElementById("userPopup");
+        if(popup){
+            popup.classList.remove("show");
+        }
+    }
+}
+</script>
+
+
+

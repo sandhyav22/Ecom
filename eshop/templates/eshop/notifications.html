@@ -1,0 +1,427 @@
+{% extends "eshop/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+  /* ===== PAGE ===== */
+  .noti-page {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 0 20px;
+  }
+
+  .noti-page h2 {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #111;
+    margin-bottom: 32px;
+  }
+
+  /* ===== OUTER CARD ===== */
+  .noti-card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  /* ===== EACH NOTIFICATION ROW ===== */
+  .noti-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 28px 36px;
+    border-bottom: 1px solid #e8e8e8;
+    transition: background 0.15s;
+    position: relative;
+  }
+
+  .noti-row:last-child { border-bottom: none; }
+  .noti-row:hover      { background: #fafafa; }
+
+  /* unread dot */
+  .noti-row.unread::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #00a650;
+  }
+
+  /* left text block */
+  .noti-body { flex: 1; }
+
+  .noti-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #00a650;
+    margin-bottom: 8px;
+  }
+
+  .noti-text {
+    font-size: 14px;
+    color: #444;
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  .noti-time {
+    font-size: 12px;
+    color: #aaa;
+    margin-top: 6px;
+  }
+
+  /* right check circle */
+  .noti-check {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .noti-check svg {
+    width: 26px;
+    height: 26px;
+    stroke: #00a650;
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+
+  /* pending = grey check */
+  .noti-row.pending .noti-check svg { stroke: #bbb; }
+  .noti-row.pending .noti-title     { color: #999; }
+
+  /* ===== EMPTY STATE ===== */
+  .noti-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #aaa;
+    font-size: 15px;
+  }
+
+  /* ===== MARK ALL READ BTN ===== */
+  .noti-topbar {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 14px;
+  }
+
+  .mark-all-btn {
+    background: none;
+    border: 1px solid #00a650;
+    color: #00a650;
+    border-radius: 8px;
+    padding: 7px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .mark-all-btn:hover {
+    background: #00a650;
+    color: #fff;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 600px) {
+    .noti-row      { padding: 20px 20px 20px 28px; flex-wrap: wrap; gap: 12px; }
+    .noti-check    { width: 44px; height: 44px; }
+    .noti-check svg{ width: 20px; height: 20px; }
+    .noti-title    { font-size: 15px; }
+    .noti-text     { font-size: 13px; }
+    .noti-page h2  { font-size: 18px; }
+  }
+</style>
+
+<div class="noti-page">
+  <h2>Product Delivery Status Notifications</h2>
+
+  <div class="noti-topbar">
+    <button class="mark-all-btn" onclick="markAllRead()">Mark all as read</button>
+  </div>
+
+  <div class="noti-card" id="notiList">
+
+    {% if notifications %}
+      {% for noti in notifications %}
+      <div class="noti-row {% if not noti.is_read %}unread{% endif %} {% if not noti.is_completed %}pending{% endif %}"
+           id="noti-{{ noti.id }}" data-id="{{ noti.id }}">
+        <div class="noti-body">
+          <div class="noti-title">{{ noti.title }}</div>
+          <p class="noti-text">{{ noti.message }}</p>
+          <div class="noti-time">{{ noti.created_at|timesince }} ago</div>
+        </div>
+        <div class="noti-check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+      {% endfor %}
+
+    {% else %}
+      <!-- Demo rows shown when DB is empty -->
+      <div class="noti-row unread" id="noti-demo-1">
+        <div class="noti-body">
+          <div class="noti-title">Order Placed</div>
+          <p class="noti-text">
+            Your order has been placed successfully!<br>
+            We're getting your item ready for dispatch.
+          </p>
+          <div class="noti-time">2 hours ago</div>
+        </div>
+        <div class="noti-check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+
+      <div class="noti-row unread" id="noti-demo-2">
+        <div class="noti-body">
+          <div class="noti-title">Order Confirmed</div>
+          <p class="noti-text">
+            Your order is confirmed.<br>
+            The seller has approved your order and will ship it soon.
+          </p>
+          <div class="noti-time">1 hour ago</div>
+        </div>
+        <div class="noti-check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+
+      <div class="noti-row pending" id="noti-demo-3">
+        <div class="noti-body">
+          <div class="noti-title">In Progress</div>
+          <p class="noti-text">
+            Your order is being packed and prepared for shipment.
+          </p>
+          <div class="noti-time">Expected soon</div>
+        </div>
+        <div class="noti-check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+
+      <div class="noti-row pending" id="noti-demo-4">
+        <div class="noti-body">
+          <div class="noti-title">On The Way</div>
+          <p class="noti-text">
+            Your order is out for delivery. Track your order for live updates.
+          </p>
+          <div class="noti-time">Expected soon</div>
+        </div>
+        <div class="noti-check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+
+      <div class="noti-row pending" id="noti-demo-5">
+        <div class="noti-body">
+          <div class="noti-title">Delivered</div>
+          <p class="noti-text">
+            Your order has been delivered successfully. Enjoy your purchase!
+          </p>
+          <div class="noti-time">Expected soon</div>
+        </div>
+        <div class="noti-check">
+          <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+    {% endif %}
+
+  </div>
+</div>
+
+<script>
+  const CSRF = '{{ csrf_token }}';
+
+  // Mark single notification read on click
+  document.querySelectorAll('.noti-row').forEach(row => {
+    row.addEventListener('click', function () {
+      const id = this.dataset.id;
+      if (!id || !this.classList.contains('unread')) return;
+      this.classList.remove('unread');
+
+      {% if notifications %}
+      fetch(`/notifications/read/${id}/`, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': CSRF, 'Content-Type': 'application/json' },
+      }).catch(() => {});
+      {% endif %}
+    });
+  });
+
+  // Mark all read
+  function markAllRead() {
+    document.querySelectorAll('.noti-row.unread').forEach(row => {
+      row.classList.remove('unread');
+    });
+
+    {% if notifications %}
+    fetch('/notifications/read-all/', {
+      method: 'POST',
+      headers: { 'X-CSRFToken': CSRF, 'Content-Type': 'application/json' },
+    }).catch(() => {});
+    {% endif %}
+  }
+</script>
+
+{% endblock %}
+
+
+
+
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <!-- LEFT LOGIN -->
+        <div class="login-box">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+
+            <h2>Register Free !</h2>
+
+            <form method="POST" action="{% url 'eshop:login' %}">
+                {% csrf_token %}
+
+                <input type="email" name="email" placeholder="Enter your e-mail" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <!-- Login Button + Forgot Password -->
+                <div class="login-actions">
+                    <button type="submit">Login</button>
+                    <a href="#" class="forgot-link">Forget your password?</a>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Sign Up Using</span>
+                </div>
+
+                <!-- Social Media Icons -->
+                <div class="social-login">
+                    <a href="#"><i class="fab fa-google"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+
+                <!-- Signup Link -->
+                <p class="signup-text">
+                    Don’t have an account ?
+                    <a href="#" onclick="openSignupModal()">Create New Account</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Login Image">
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ================= SIGNUP MODAL ================= -->
+<div id="signupModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <div class="login-box">
+            <span class="close-btn" onclick="closeSignupModal()">&times;</span>
+
+            <h2>Sign Up</h2>
+
+            <form method="POST" action="{% url 'eshop:signup' %}" onsubmit="return validateSignup()">
+                {% csrf_token %}
+
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+                <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
+
+                <small id="passwordError" style="color:red;"></small>
+
+                <div class="login-actions">
+                    <button type="submit">Sign Up</button>
+                </div>
+
+                <p class="signup-text">
+                    Already have an account ?
+                    <a href="#" onclick="backToLogin()">log in</a>
+                </p>
+            </form>
+        </div>
+
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Signup Image">
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup" class="success-popup">
+    <div class="success-box">
+        <div class="tick-circle">✔</div>
+        <h3>Login Successful</h3>
+    </div>
+</div>
+
+<script>
+function openLoginModal(){
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function closeLoginModal(){
+    document.getElementById("loginModal").style.display="none";
+}
+
+function openSignupModal(){
+    document.getElementById("loginModal").style.display="none";
+    document.getElementById("signupModal").style.display="flex";
+}
+
+function closeSignupModal(){
+    document.getElementById("signupModal").style.display="none";
+}
+
+function backToLogin(){
+    document.getElementById("signupModal").style.display="none";
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function toggleUserPopup(){
+    document.getElementById("userPopup").classList.toggle("show");
+}
+
+window.onclick = function(event){
+    if(!event.target.closest('.user-menu')){
+        let popup=document.getElementById("userPopup");
+        if(popup){
+            popup.classList.remove("show");
+        }
+    }
+}
+</script>
+
+
+

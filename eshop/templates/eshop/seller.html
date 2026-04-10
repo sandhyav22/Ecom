@@ -1,0 +1,577 @@
+{% extends "eshop/base.html" %}
+{% load static %}
+
+{% block content %}
+
+<style>
+/* ===== TOP SECTION ===== */
+.top-section {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 0 20px;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.top-bar h2 {
+  font-size: 28px;
+  font-weight: 600;
+}
+
+.top-bar button {
+  padding: 8px 14px;
+  background: #F6E63B;
+  color: black;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-size: 26px;
+  font-weight: 500;
+}
+
+/* GRID CARD */
+.feature-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 20px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+.feature-item {
+  text-align: center;
+}
+
+.feature-item img {
+  width:120px;
+  height: 90px;
+
+  border-radius: 10px;
+}
+
+.feature-item h4 {
+  margin-top: 10px;
+  font-size: 16px;
+}
+
+/* ===== TABLET ===== */
+@media (max-width: 992px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+
+  .top-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* ===== CARD ===== */
+.seller-card {
+  max-width: 1000px;
+  margin: -80px auto 40px auto;
+  background: #fff;
+  border-radius: 25px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* TITLE (TOP LEFT) */
+.seller-title {
+  font-size: 24px;
+  color: black;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+/* FLEX CONTENT */
+.seller-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 25px;
+}
+
+/* IMAGE */
+.seller-content img {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* TEXT */
+.seller-text h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #4CAF50;
+}
+
+.seller-text p {
+  font-size: 17px;
+  color: black;
+  line-height: 1.7;
+}
+.start-btn {
+  padding: 8px 14px;
+  background: #F6E63B;
+  color: black;
+  border-radius: 15px;
+  font-size: 26px;
+  font-weight: 500;
+  text-decoration: none;
+}
+
+/* ===== TABLET ===== */
+@media (max-width: 992px) {
+  .seller-hero {
+    height: 280px;
+  }
+
+  .seller-card {
+    margin: -60px 20px 30px;
+    padding: 25px;
+  }
+
+  .seller-title {
+    font-size: 20px;
+  }
+}
+
+/* ===== MOBILE ===== */
+@media (max-width: 600px) {
+
+  .seller-hero {
+    height: 220px;
+  }
+
+  .seller-content {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .seller-content img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .seller-text h3 {
+    font-size: 18px;
+  }
+
+  .seller-text p {
+    font-size: 15px;
+  }
+}
+/* Hamburger hidden desktop */
+.hamburger {
+    display: none;
+    font-size: 28px;
+    cursor: pointer;
+}
+
+/* Mobile menu hidden initially */
+.mobile-menu {
+    display: none;
+    flex-direction: column;
+    background: white;
+    width: 100%;
+    padding: 15px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+}
+
+.mobile-menu a {
+    padding: 12px;
+    text-decoration: none;
+    color: black;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+
+    .desktop-menu {
+        display: none !important;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    .search-box {
+        width: 50%;
+    }
+
+    .navbar {
+        flex-wrap: wrap;
+    }
+
+    .mobile-menu.show {
+        display: flex;
+    }
+}
+/* LOGIN CONTAINER */
+.login-container {
+    display: flex;
+    width: 850px;
+    max-width: 95%;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0px 10px 35px rgba(0,0,0,0.2);
+}
+
+/* LOGIN BOX */
+.login-box {
+    width: 50%;
+    padding: 40px;
+    position: relative;
+}
+
+.login-box h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+/* INPUTS */
+.login-box input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 18px;
+    border: 2px solid #00b33c;
+    border-radius: 10px;
+    font-size: 16px;
+}
+
+/* ACTIONS */
+.login-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.login-actions button {
+    background: #00c83c;
+    color: white;
+    border: none;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.forgot-link {
+    font-size: 14px;
+    color: #444;
+    text-decoration: none;
+}
+
+/* DIVIDER */
+.divider {
+    text-align: center;
+    margin: 25px 0;
+    position: relative;
+}
+
+.divider span {
+    background: white;
+    padding: 0 15px;
+    font-weight: bold;
+    color: #555;
+}
+
+.divider::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: #ccc;
+    top: 50%;
+    left: 0;
+    z-index: -1;
+}
+
+/* SOCIAL LOGIN */
+.social-login {
+    display: flex;
+    justify-content: space-around;
+    border: 1px solid #ddd;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.social-login a {
+    color: #333;
+    font-size: 20px;
+    transition: 0.3s;
+}
+
+.social-login a:hover {
+    transform: scale(1.2);
+    color: green;
+}
+
+/* SIGNUP TEXT */
+.signup-text {
+    text-align: center;
+    font-size: 15px;
+}
+
+.signup-text a {
+    color: green;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* RIGHT IMAGE */
+.login-image {
+    width: 50%;
+    background: #f9f9f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-image img {
+    width: 70%;
+    max-height: 350px;
+    object-fit: contain;
+}
+</style>
+
+<!-- ===== NEW TOP SECTION ===== -->
+<div class="top-section">
+
+  <!-- HEADER -->
+  <div class="top-bar">
+    <h2>Sell Online With <span style="color: #C3E01F;">Seller Ecom</span></h2>
+   
+    <a href="{% url 'eshop:seller_register' %}" class="start-btn">Start Selling</a>
+  </div>
+
+  <!-- CARD -->
+  <div class="feature-card">
+    <div class="feature-grid">
+
+      <div class="feature-item">
+        <img src="{% static 'image/ICON1.png' %}" alt="">
+        <h4>45 crore + Seller Ecom<br>
+        Customers</h4>
+      </div>
+
+      <div class="feature-item">
+        <img src="{% static 'image/ICON2.png' %}" alt="">
+        <h4>7* days secure & regular<br>
+        Payments</h4>
+      </div>
+
+      <div class="feature-item">
+        <img src="{% static 'image/ICON3.png' %}" alt="">
+        <h4>Low cost of doing<br>business</h4>
+      </div>
+
+      <div class="feature-item">
+        <img src="{% static 'image/ICON4.png' %}" alt="">
+        <h4>One click Seller support</h4>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<br><br><br><br><br><br>
+<!-- CARD -->
+<div class="seller-card">
+
+  <!-- TITLE -->
+  <div class="seller-title"> Seller Success Story</div>
+
+  <!-- FLEX ROW -->
+  <div class="seller-content">
+
+    <!-- LEFT IMAGE -->
+    <img src="{% static 'image/seller.png' %}" alt="Seller">
+
+    <!-- RIGHT CONTENT -->
+    <div class="seller-text">
+      <h3>Textile Seller Story</h3>
+      <p>
+       "I started as a small textile shop owner with limited customers. After joining Seller Ecom, I listed<br>
+        just five products. Within months, my orders grew consistently and I expanded my catalogue to <br>
+        150+ items. Today, I ship all over India and employ two extra staff members - all thanks to Seller<br>
+        Ecom trusted platform."
+      </p>
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}
+
+
+
+<!-- ================= LOGIN MODAL ================= -->
+<div id="loginModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <!-- LEFT LOGIN -->
+        <div class="login-box">
+            <span class="close-btn" onclick="closeLoginModal()">&times;</span>
+
+            <h2>Register Free !</h2>
+
+            <form method="POST" action="{% url 'eshop:login' %}">
+                {% csrf_token %}
+
+                <input type="email" name="email" placeholder="Enter your e-mail" required>
+                <input type="password" name="password" placeholder="Password" required>
+
+                <!-- Login Button + Forgot Password -->
+                <div class="login-actions">
+                    <button type="submit">Login</button>
+                    <a href="#" class="forgot-link">Forget your password?</a>
+                </div>
+
+                <!-- Divider -->
+                <div class="divider">
+                    <span>Sign Up Using</span>
+                </div>
+
+                <!-- Social Media Icons -->
+                <div class="social-login">
+                    <a href="#"><i class="fab fa-google"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+
+                <!-- Signup Link -->
+                <p class="signup-text">
+                    Don’t have an account ?
+                    <a href="#" onclick="openSignupModal()">Create New Account</a>
+                </p>
+            </form>
+        </div>
+
+        <!-- RIGHT IMAGE -->
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Login Image">
+        </div>
+
+    </div>
+</div>
+
+
+<!-- ================= SIGNUP MODAL ================= -->
+<div id="signupModal" class="login-overlay">
+
+    <div class="login-container">
+
+        <div class="login-box">
+            <span class="close-btn" onclick="closeSignupModal()">&times;</span>
+
+            <h2>Sign Up</h2>
+
+            <form method="POST" action="{% url 'eshop:signup' %}" onsubmit="return validateSignup()">
+                {% csrf_token %}
+
+                <input type="text" id="fullname" name="fullname" placeholder="Full Name" required>
+                <input type="email" id="signupEmail" name="email" placeholder="Email" required>
+                <input type="password" id="signupPassword" name="password" placeholder="Password" required>
+                <input type="password" id="confirmPassword" name="confirm_password" placeholder="Confirm Password" required>
+
+                <small id="passwordError" style="color:red;"></small>
+
+                <div class="login-actions">
+                    <button type="submit">Sign Up</button>
+                </div>
+
+                <p class="signup-text">
+                    Already have an account ?
+                    <a href="#" onclick="backToLogin()">log in</a>
+                </p>
+            </form>
+        </div>
+
+        <div class="login-image">
+            <img src="{% static 'image/image 63.png' %}" alt="Signup Image">
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+<!-- SUCCESS POPUP -->
+<div id="successPopup" class="success-popup">
+    <div class="success-box">
+        <div class="tick-circle">✔</div>
+        <h3>Login Successful</h3>
+    </div>
+</div>
+
+<script>
+function openLoginModal(){
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function closeLoginModal(){
+    document.getElementById("loginModal").style.display="none";
+}
+
+function openSignupModal(){
+    document.getElementById("loginModal").style.display="none";
+    document.getElementById("signupModal").style.display="flex";
+}
+
+function closeSignupModal(){
+    document.getElementById("signupModal").style.display="none";
+}
+
+function backToLogin(){
+    document.getElementById("signupModal").style.display="none";
+    document.getElementById("loginModal").style.display="flex";
+}
+
+function toggleUserPopup(){
+    document.getElementById("userPopup").classList.toggle("show");
+}
+
+window.onclick = function(event){
+    if(!event.target.closest('.user-menu')){
+        let popup=document.getElementById("userPopup");
+        if(popup){
+            popup.classList.remove("show");
+        }
+    }
+}
+</script>
+
+
+
